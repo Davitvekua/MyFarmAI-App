@@ -15,7 +15,7 @@ import Impressum from "./pages/impressum/impressum"
 function App() {
   const router = createBrowserRouter([
     {
-      path: "",
+      path: "/",
       element: <Root />,
       errorElement: <ErrorPage />,
       children: [
