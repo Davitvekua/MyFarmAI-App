@@ -7,7 +7,7 @@ export default function ErrorPage() {
       </h1>{" "}
       <br />
       <a
-        href="/"
+        href={import.meta.env.BASE_URL}
         className="rounded-md bg-gray-600 px-4 py-2 text-white hover:bg-gray-800"
       >
         Zur Startseite

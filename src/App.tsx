@@ -13,25 +13,30 @@ import Kontakt from "./pages/kontakt/kontakt"
 import Impressum from "./pages/impressum/impressum"
 
 function App() {
-  const router = createBrowserRouter([
+  const router = createBrowserRouter(
+    [
+      {
+        path: "/",
+        element: <Root />,
+        errorElement: <ErrorPage />,
+        children: [
+          { index: true, element: <Landing /> },
+          { path: "login", element: <Login /> },
+          { path: "register", element: <Register /> },
+          { path: "dashboard", element: <Dashboard /> },
+          { path: "fields", element: <Fields /> },
+          { path: "fields/:fieldId", element: <FieldDetails /> },
+          { path: "map", element: <Mapp /> },
+          { path: "profile", element: <Profile /> },
+          { path: "contact", element: <Kontakt /> },
+          { path: "impressum", element: <Impressum /> },
+        ],
+      },
+    ],
     {
-      path: "/",
-      element: <Root />,
-      errorElement: <ErrorPage />,
-      children: [
-        { index: true, element: <Landing /> },
-        { path: "login", element: <Login /> },
-        { path: "register", element: <Register /> },
-        { path: "dashboard", element: <Dashboard /> },
-        { path: "fields", element: <Fields /> },
-        { path: "fields/:fieldId", element: <FieldDetails /> },
-        { path: "map", element: <Mapp /> },
-        { path: "profile", element: <Profile /> },
-        { path: "contact", element: <Kontakt /> },
-        { path: "impressum", element: <Impressum /> },
-      ],
+      basename: import.meta.env.BASE_URL,
     },
-  ])
+  )
 
   return <RouterProvider router={router} />
 }
