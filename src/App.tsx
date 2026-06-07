@@ -1,21 +1,39 @@
-import { Button } from "@/components/ui/button"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import Profile from "./pages/profile/Profile"
+import Root from "./pages/root/root"
+import ErrorPage from "./pages/errorRoute/errorRoute"
+import Landing from "./pages/landing/landing"
+import Login from "./pages/login/login"
+import Register from "./pages/register/register"
+import Dashboard from "./pages/dashboard/dashboard"
+import Fields from "./pages/fields/fields"
+import FieldDetails from "./pages/fieldDetails/fieldDetails"
+import Mapp from "./pages/map/map"
+import Kontakt from "./pages/kontakt/kontakt"
+import Impressum from "./pages/impressum/impressum"
 
-export function App() {
-  return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
-  )
+function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Root />,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, element: <Landing /> },
+        { path: "login", element: <Login /> },
+        { path: "register", element: <Register /> },
+        { path: "dashboard", element: <Dashboard /> },
+        { path: "fields", element: <Fields /> },
+        { path: "fields/:fieldId", element: <FieldDetails /> },
+        { path: "map", element: <Mapp /> },
+        { path: "profile", element: <Profile /> },
+        { path: "contact", element: <Kontakt /> },
+        { path: "impressum", element: <Impressum /> },
+      ],
+    },
+  ])
+
+  return <RouterProvider router={router} />
 }
 
 export default App
