@@ -1,10 +1,80 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { Layers, MapPin, PenTool, Save, Sprout, X } from "lucide-react"
 
 import mapBackground from "../../assets/landing-background.jpg"
 import mapCreatePreview from "../../assets/map-create-preview.jpg"
 
+import { supabase } from "../../lib/supabaseClient"
+import { useAuth } from "../../context/AuthContext"
+
 function Mapp() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const [name, setName] = useState("")
+  const [cropType, setCropType] = useState("")
+  const [soilType, setSoilType] = useState("")
+  const [note, setNote] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const areaM2 = 12450
+  const areaHa = 1.245
+  const centerLat = 48.123456
+  const centerLng = 11.123456
+
+  const polygon = {
+    type: "Polygon",
+    coordinates: [
+      [
+        [11.1229, 48.1231],
+        [11.1241, 48.1232],
+        [11.1243, 48.124],
+        [11.1232, 48.1242],
+        [11.1229, 48.1231],
+      ],
+    ],
+  }
+
+  async function handleSaveField() {
+    setErrorMessage("")
+
+    if (!user) {
+      setErrorMessage("Du musst eingeloggt sein, um eine Fläche zu speichern.")
+      return
+    }
+
+    if (!name.trim()) {
+      setErrorMessage("Bitte gib einen Namen für die Fläche ein.")
+      return
+    }
+
+    setIsLoading(true)
+
+    const { error } = await supabase.from("fields").insert({
+      user_id: user.id,
+      name,
+      crop_type: cropType,
+      soil_type: soilType,
+      note,
+      area_m2: areaM2,
+      area_ha: areaHa,
+      center_lat: centerLat,
+      center_lng: centerLng,
+      polygon,
+    })
+
+    setIsLoading(false)
+
+    if (error) {
+      setErrorMessage("Die Fläche konnte nicht gespeichert werden.")
+      return
+    }
+
+    navigate("/fields")
+  }
+
   return (
     <main
       className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
@@ -30,20 +100,31 @@ function Mapp() {
 
           <section className="rounded-2xl bg-white/95 p-8 shadow-lg">
             <div className="mb-6 flex gap-5">
-              <button className="flex items-center gap-3 rounded-lg border border-green-700 bg-white px-6 py-3 text-lg font-semibold text-green-800 hover:bg-green-50">
+              <button
+                type="button"
+                className="flex items-center gap-3 rounded-lg border border-green-700 bg-white px-6 py-3 text-lg font-semibold text-green-800 hover:bg-green-50"
+              >
                 <PenTool className="h-5 w-5" />
                 Polygon zeichnen
               </button>
 
-              <button className="flex items-center gap-3 rounded-lg bg-green-700 px-7 py-3 text-lg font-semibold text-white shadow-md hover:bg-green-800">
+              <button
+                type="button"
+                onClick={handleSaveField}
+                disabled={isLoading}
+                className="flex items-center gap-3 rounded-lg bg-green-700 px-7 py-3 text-lg font-semibold text-white shadow-md hover:bg-green-800 disabled:opacity-60"
+              >
                 <Save className="h-5 w-5" />
-                Speichern
+                {isLoading ? "Wird gespeichert..." : "Speichern"}
               </button>
 
-              <button className="flex items-center gap-3 rounded-lg border border-red-500 bg-white px-7 py-3 text-lg font-semibold text-red-600 hover:bg-red-50">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-3 rounded-lg border border-red-500 bg-white px-7 py-3 text-lg font-semibold text-red-600 hover:bg-red-50"
+              >
                 <X className="h-5 w-5" />
                 Abbrechen
-              </button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-[1.9fr_1fr] gap-8">
@@ -90,9 +171,11 @@ function Mapp() {
                       Name der Fläche
                     </label>
                     <input
-                      readOnly
-                      value="z. B. Feld Süd"
-                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-500 outline-none"
+                      type="text"
+                      placeholder="z. B. Feld Süd"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-700 outline-none"
                     />
                   </div>
 
@@ -101,9 +184,11 @@ function Mapp() {
                       Kulturart
                     </label>
                     <input
-                      readOnly
-                      value="z. B. Weizen"
-                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-500 outline-none"
+                      type="text"
+                      placeholder="z. B. Weizen"
+                      value={cropType}
+                      onChange={(event) => setCropType(event.target.value)}
+                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-700 outline-none"
                     />
                   </div>
 
@@ -112,9 +197,11 @@ function Mapp() {
                       Bodenart
                     </label>
                     <input
-                      readOnly
-                      value="z. B. Lehmboden"
-                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-500 outline-none"
+                      type="text"
+                      placeholder="z. B. Lehmboden"
+                      value={soilType}
+                      onChange={(event) => setSoilType(event.target.value)}
+                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-700 outline-none"
                     />
                   </div>
 
@@ -123,7 +210,8 @@ function Mapp() {
                       Berechnete Größe
                     </label>
                     <div className="rounded-lg bg-green-50 px-4 py-4 text-xl font-bold text-green-900">
-                      12.450 m² / 1,245 ha
+                      {areaM2.toLocaleString("de-DE")} m² /{" "}
+                      {areaHa.toLocaleString("de-DE")} ha
                     </div>
                   </div>
 
@@ -132,8 +220,8 @@ function Mapp() {
                       Zentrumskoordinate
                     </label>
                     <div className="rounded-lg bg-green-50 px-4 py-4 text-gray-700">
-                      <p>Lat: 48.123456</p>
-                      <p>Lng: 11.123456</p>
+                      <p>Lat: {centerLat}</p>
+                      <p>Lng: {centerLng}</p>
                     </div>
                   </div>
 
@@ -142,16 +230,28 @@ function Mapp() {
                       Notiz
                     </label>
                     <textarea
-                      readOnly
-                      value="Hier Notizen hinzufügen..."
-                      className="h-24 w-full resize-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-500 outline-none"
+                      placeholder="Hier Notizen hinzufügen..."
+                      value={note}
+                      onChange={(event) => setNote(event.target.value)}
+                      className="h-24 w-full resize-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 outline-none"
                     />
                   </div>
 
+                  {errorMessage && (
+                    <p className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                      {errorMessage}
+                    </p>
+                  )}
+
                   <div className="grid grid-cols-2 gap-4 pt-2">
-                    <button className="flex items-center justify-center gap-2 rounded-lg bg-green-700 px-5 py-3 font-semibold text-white shadow-md hover:bg-green-800">
+                    <button
+                      type="button"
+                      onClick={handleSaveField}
+                      disabled={isLoading}
+                      className="flex items-center justify-center gap-2 rounded-lg bg-green-700 px-5 py-3 font-semibold text-white shadow-md hover:bg-green-800 disabled:opacity-60"
+                    >
                       <Save className="h-5 w-5" />
-                      Speichern
+                      {isLoading ? "Speichern..." : "Speichern"}
                     </button>
 
                     <Link

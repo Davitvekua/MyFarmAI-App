@@ -1,9 +1,93 @@
+import { useEffect, useState } from "react"
 import { Edit3, Map, Plus, Sprout, Star, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import dashboardBackground from "../../assets/landing-background.jpg"
 
+import { supabase } from "../../lib/supabaseClient"
+import { useAuth } from "../../context/AuthContext"
+import type { Field } from "@/types/appTypes"
+
+type DashboardField = Pick<
+  Field,
+  "id" | "name" | "crop_type" | "soil_type" | "area_ha"
+>
+
 function Dashboard() {
+  const { user } = useAuth()
+
+  const [profileName, setProfileName] = useState("Nutzer")
+  const [fields, setFields] = useState<DashboardField[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState("")
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (!user) return
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single()
+
+      if (data) {
+        const fullName =
+          `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim()
+
+        if (fullName) {
+          setProfileName(fullName)
+        }
+      }
+    }
+
+    async function loadFields() {
+      if (!user) return
+
+      setIsLoading(true)
+      setErrorMessage("")
+
+      const { data, error } = await supabase
+        .from("fields")
+        .select("id, name, crop_type, soil_type, area_ha")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+
+      setIsLoading(false)
+
+      if (error) {
+        setErrorMessage("Flächen konnten nicht geladen werden.")
+        return
+      }
+
+      setFields(data ?? [])
+    }
+
+    loadProfile()
+    loadFields()
+  }, [user])
+
+  const totalAreaHa = fields.reduce((sum, field) => {
+    return sum + Number(field.area_ha ?? 0)
+  }, 0)
+
+  const largestField = fields.reduce<DashboardField | null>(
+    (largest, field) => {
+      if (!largest) return field
+
+      return Number(field.area_ha ?? 0) > Number(largest.area_ha ?? 0)
+        ? field
+        : largest
+    },
+    null
+  )
+
+  function formatArea(areaHa: number | null) {
+    if (areaHa === null) return "-"
+
+    return `${areaHa.toLocaleString("de-DE")} ha`
+  }
+
   return (
     <main
       className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
@@ -19,7 +103,7 @@ function Dashboard() {
 
               <div>
                 <h1 className="text-5xl font-bold text-green-900">
-                  Willkommen, Nutzername
+                  Willkommen, {profileName}
                 </h1>
                 <p className="mt-2 text-lg text-gray-700">
                   Hier ist ein Überblick über deine landwirtschaftlichen
@@ -37,7 +121,9 @@ function Dashboard() {
 
               <div>
                 <p className="text-lg text-gray-700">Anzahl Flächen</p>
-                <p className="mt-2 text-4xl font-bold text-green-900">5</p>
+                <p className="mt-2 text-4xl font-bold text-green-900">
+                  {isLoading ? "-" : fields.length}
+                </p>
               </div>
             </div>
 
@@ -49,7 +135,9 @@ function Dashboard() {
               <div>
                 <p className="text-lg text-gray-700">Gesamtfläche</p>
                 <p className="mt-2 text-4xl font-bold text-green-900">
-                  12,4 ha
+                  {isLoading
+                    ? "-"
+                    : `${totalAreaHa.toLocaleString("de-DE")} ha`}
                 </p>
               </div>
             </div>
@@ -62,7 +150,7 @@ function Dashboard() {
               <div>
                 <p className="text-lg text-gray-700">Größte Fläche</p>
                 <p className="mt-2 text-4xl font-bold text-green-900">
-                  Feld Süd
+                  {isLoading ? "-" : (largestField?.name ?? "-")}
                 </p>
               </div>
             </div>
@@ -89,45 +177,62 @@ function Dashboard() {
               </Link>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-gray-200 text-gray-700">
-                    <th className="px-6 py-4 font-semibold">Feldname</th>
-                    <th className="px-6 py-4 font-semibold">Kulturart</th>
-                    <th className="px-6 py-4 font-semibold">Bodenart</th>
-                    <th className="px-6 py-4 font-semibold">Größe</th>
-                    <th className="px-6 py-4" />
-                  </tr>
-                </thead>
+            {isLoading && (
+              <p className="rounded-xl bg-white px-6 py-6 text-lg text-gray-700">
+                Flächen werden geladen...
+              </p>
+            )}
 
-                <tbody>
-                  <tr className="border-b border-gray-100">
-                    <td className="px-6 py-5">Feld Nord</td>
-                    <td className="px-6 py-5">Mais</td>
-                    <td className="px-6 py-5">Lehm</td>
-                    <td className="px-6 py-5">2,1 ha</td>
-                    <td className="px-6 py-5 text-right text-gray-500">⋮</td>
-                  </tr>
+            {errorMessage && (
+              <p className="rounded-xl bg-red-50 px-6 py-5 text-red-700">
+                {errorMessage}
+              </p>
+            )}
 
-                  <tr className="border-b border-gray-100">
-                    <td className="px-6 py-5">Feld Süd</td>
-                    <td className="px-6 py-5">Weizen</td>
-                    <td className="px-6 py-5">Ton</td>
-                    <td className="px-6 py-5">3,4 ha</td>
-                    <td className="px-6 py-5 text-right text-gray-500">⋮</td>
-                  </tr>
+            {!isLoading && !errorMessage && fields.length === 0 && (
+              <p className="rounded-xl bg-white px-6 py-6 text-lg text-gray-700">
+                Noch keine Flächen angelegt.
+              </p>
+            )}
 
-                  <tr>
-                    <td className="px-6 py-5">Obstgarten</td>
-                    <td className="px-6 py-5">Apfel</td>
-                    <td className="px-6 py-5">Sand-Lehm</td>
-                    <td className="px-6 py-5">0,8 ha</td>
-                    <td className="px-6 py-5 text-right text-gray-500">⋮</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {!isLoading && !errorMessage && fields.length > 0 && (
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-700">
+                      <th className="px-6 py-4 font-semibold">Feldname</th>
+                      <th className="px-6 py-4 font-semibold">Kulturart</th>
+                      <th className="px-6 py-4 font-semibold">Bodenart</th>
+                      <th className="px-6 py-4 font-semibold">Größe</th>
+                      <th className="px-6 py-4" />
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {fields.map((field, index) => (
+                      <tr
+                        key={field.id}
+                        className={
+                          index === fields.length - 1
+                            ? ""
+                            : "border-b border-gray-100"
+                        }
+                      >
+                        <td className="px-6 py-5">{field.name}</td>
+                        <td className="px-6 py-5">{field.crop_type || "-"}</td>
+                        <td className="px-6 py-5">{field.soil_type || "-"}</td>
+                        <td className="px-6 py-5">
+                          {formatArea(field.area_ha)}
+                        </td>
+                        <td className="px-6 py-5 text-right text-gray-500">
+                          ⋮
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
 
           <section className="rounded-2xl bg-white/95 p-8 shadow-lg">
