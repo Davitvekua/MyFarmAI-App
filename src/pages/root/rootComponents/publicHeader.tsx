@@ -16,12 +16,6 @@ function PublicHeader() {
         >
           Home
         </Link>
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-2 rounded-md bg-green-50 px-4 py-2 font-semibold text-green-900"
-        >
-          Login-Modus
-        </Link>
 
         <Link
           to="/login"

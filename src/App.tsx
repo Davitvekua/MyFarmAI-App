@@ -1,4 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+
+import ProtectedRoute from "./ProtectedRoute"
+
 import Profile from "./pages/profile/Profile"
 import Root from "./pages/root/root"
 import ErrorPage from "./pages/errorRoute/errorRoute"
@@ -23,19 +26,56 @@ function App() {
           { index: true, element: <Landing /> },
           { path: "login", element: <Login /> },
           { path: "register", element: <Register /> },
-          { path: "dashboard", element: <Dashboard /> },
-          { path: "fields", element: <Fields /> },
-          { path: "fields/:fieldId", element: <FieldDetails /> },
-          { path: "map", element: <Mapp /> },
-          { path: "profile", element: <Profile /> },
-          { path: "contact", element: <Kontakt /> },
+
+          {
+            path: "dashboard",
+            element: (
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "fields",
+            element: (
+              <ProtectedRoute>
+                <Fields />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "fields/:fieldId",
+            element: (
+              <ProtectedRoute>
+                <FieldDetails />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "map",
+            element: (
+              <ProtectedRoute>
+                <Mapp />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "profile",
+            element: (
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            ),
+          },
+
+          { path: "kontakt", element: <Kontakt /> },
           { path: "impressum", element: <Impressum /> },
         ],
       },
     ],
     {
       basename: import.meta.env.BASE_URL,
-    },
+    }
   )
 
   return <RouterProvider router={router} />

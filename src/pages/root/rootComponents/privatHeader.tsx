@@ -1,11 +1,21 @@
-import { NavLink, Link } from "react-router-dom"
+import { NavLink, Link, useNavigate } from "react-router-dom"
 import { Grid2X2, LogOut, MapPin, Sprout, UserRound } from "lucide-react"
 
+import { useAuth } from "../../../context/AuthContext"
+
 function PrivateHeader() {
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
+
+  async function handleLogout() {
+    await signOut()
+    navigate("/login")
+  }
+
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 rounded-md px-4 py-2 font-medium transition ${
       isActive
-        ? "bg-green-50 text-green-900"
+        ? "bg-green-100 text-green-900"
         : "text-gray-700 hover:bg-green-50 hover:text-green-900"
     }`
 
@@ -20,12 +30,6 @@ function PrivateHeader() {
       </Link>
 
       <nav className="flex items-center gap-4">
-        <Link
-          to="/"
-          className="font-semibold text-gray-800 hover:text-green-800"
-        >
-          Home
-        </Link>
         <NavLink to="/dashboard" className={navLinkClass}>
           <Grid2X2 className="h-5 w-5" />
           Dashboard
@@ -46,7 +50,11 @@ function PrivateHeader() {
           Profil
         </NavLink>
 
-        <button className="flex items-center gap-2 rounded-md px-4 py-2 font-medium text-gray-700 transition hover:bg-green-50 hover:text-green-900">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex items-center gap-2 rounded-md px-4 py-2 font-medium text-gray-700 transition hover:bg-green-50 hover:text-green-900"
+        >
           <LogOut className="h-5 w-5" />
           Logout
         </button>

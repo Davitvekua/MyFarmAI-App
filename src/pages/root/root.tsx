@@ -6,7 +6,7 @@ import Footer from "./rootComponents/footer"
 function Root() {
   const location = useLocation()
 
-  const publicRoutes = ["/", "/login", "/register"]
+  const publicRoutes = ["/", "/login", "/register", "/kontakt", "/impressum"]
 
   const isPublicRoute = publicRoutes.includes(location.pathname)
 

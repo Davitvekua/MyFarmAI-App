@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { Lock, LogIn, Mail } from "lucide-react"
 
 import loginBackground from "../../assets/landing-background.jpg"
+import { supabase } from "../../lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,6 +11,34 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 function Login() {
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function handleLogin(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    setErrorMessage("")
+    setIsLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    setIsLoading(false)
+
+    if (error) {
+      setErrorMessage("Login fehlgeschlagen. Bitte E-Mail und Passwort prüfen.")
+      return
+    }
+
+    navigate("/dashboard")
+  }
+
   return (
     <main
       className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat px-6 py-20"
@@ -19,7 +49,7 @@ function Login() {
           <CardContent className="p-0">
             <h1 className="mb-10 text-5xl font-bold text-green-950">Login</h1>
 
-            <div className="space-y-7">
+            <form onSubmit={handleLogin} className="space-y-7">
               <div className="space-y-3">
                 <Label
                   htmlFor="email"
@@ -30,12 +60,15 @@ function Login() {
 
                 <div className="relative">
                   <Mail className="absolute top-1/2 left-4 h-6 w-6 -translate-y-1/2 text-gray-500" />
+
                   <Input
                     id="email"
                     type="email"
-                    value="ihre.email@beispiel.de"
-                    readOnly
-                    className="h-16 rounded-xl border-gray-300 pl-14 text-lg text-gray-500"
+                    placeholder="ihre.email@beispiel.de"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="h-16 rounded-xl border-gray-300 pl-14 text-lg text-gray-700"
+                    required
                   />
                 </div>
               </div>
@@ -50,19 +83,32 @@ function Login() {
 
                 <div className="relative">
                   <Lock className="absolute top-1/2 left-4 h-6 w-6 -translate-y-1/2 text-gray-500" />
+
                   <Input
                     id="password"
-                    type="text"
-                    value="Ihr Passwort"
-                    readOnly
-                    className="h-16 rounded-xl border-gray-300 pl-14 text-lg text-gray-500"
+                    type="password"
+                    placeholder="Ihr Passwort"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="h-16 rounded-xl border-gray-300 pl-14 text-lg text-gray-700"
+                    required
                   />
                 </div>
               </div>
 
-              <Button className="h-16 w-full rounded-xl bg-green-700 text-xl font-semibold text-white shadow-md hover:bg-green-800">
+              {errorMessage && (
+                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  {errorMessage}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="h-16 w-full rounded-xl bg-green-700 text-xl font-semibold text-white shadow-md hover:bg-green-800"
+              >
                 <LogIn className="mr-3 h-6 w-6" />
-                Anmelden
+                {isLoading ? "Wird angemeldet..." : "Anmelden"}
               </Button>
 
               <div className="flex items-center gap-5">
@@ -81,7 +127,7 @@ function Login() {
                   Zur Registrierung
                 </Link>
               </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
       </div>

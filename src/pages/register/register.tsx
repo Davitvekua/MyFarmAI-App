@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import {
   Eye,
   Globe,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react"
 
 import registerBackground from "../../assets/landing-background.jpg"
+import { supabase } from "../../lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,6 +20,60 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 function Register() {
+  const navigate = useNavigate()
+
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [country, setCountry] = useState("")
+  const [city, setCity] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function handleRegister(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    setErrorMessage("")
+    setIsLoading(true)
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      setIsLoading(false)
+      setErrorMessage("Registrierung fehlgeschlagen. Bitte Eingaben prüfen.")
+      return
+    }
+
+    const userId = data.user?.id
+
+    if (!userId) {
+      setIsLoading(false)
+      setErrorMessage("Nutzer konnte nicht erstellt werden.")
+      return
+    }
+
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: userId,
+      first_name: firstName,
+      last_name: lastName,
+      country,
+      city,
+    })
+
+    setIsLoading(false)
+
+    if (profileError) {
+      setErrorMessage("Profil konnte nicht gespeichert werden.")
+      return
+    }
+
+    navigate("/login")
+  }
+
   return (
     <main
       className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat px-6 py-10"
@@ -30,7 +86,7 @@ function Register() {
               Registrierung
             </h1>
 
-            <div className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
                 <Label
                   htmlFor="firstName"
@@ -43,9 +99,12 @@ function Register() {
                   <User className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                   <Input
                     id="firstName"
-                    value="Ihr Vorname"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-500"
+                    type="text"
+                    placeholder="Ihr Vorname"
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-700"
+                    required
                   />
                 </div>
               </div>
@@ -62,9 +121,12 @@ function Register() {
                   <User className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                   <Input
                     id="lastName"
-                    value="Ihr Nachname"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-500"
+                    type="text"
+                    placeholder="Ihr Nachname"
+                    value={lastName}
+                    onChange={(event) => setLastName(event.target.value)}
+                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-700"
+                    required
                   />
                 </div>
               </div>
@@ -82,9 +144,11 @@ function Register() {
                   <Input
                     id="email"
                     type="email"
-                    value="ihre.email@beispiel.de"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-500"
+                    placeholder="ihre.email@beispiel.de"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-700"
+                    required
                   />
                 </div>
               </div>
@@ -101,10 +165,12 @@ function Register() {
                   <Lock className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                   <Input
                     id="password"
-                    type="text"
-                    value="Ihr Passwort"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 px-12 text-base text-gray-500"
+                    type="password"
+                    placeholder="Ihr Passwort"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="h-13 rounded-xl border-gray-300 px-12 text-base text-gray-700"
+                    required
                   />
                   <Eye className="absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                 </div>
@@ -120,12 +186,20 @@ function Register() {
 
                 <div className="relative">
                   <Globe className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
-                  <Input
+
+                  <select
                     id="country"
-                    value="Land auswählen"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-500"
-                  />
+                    value={country}
+                    onChange={(event) => setCountry(event.target.value)}
+                    className="h-13 w-full appearance-none rounded-xl border border-gray-300 bg-white pr-12 pl-12 text-base text-gray-700 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    required
+                  >
+                    <option value="">Land auswählen</option>
+                    <option value="Österreich">Österreich</option>
+                    <option value="Deutschland">Deutschland</option>
+                    <option value="Schweiz">Schweiz</option>
+                  </select>
+
                   <span className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500">
                     ⌄
                   </span>
@@ -144,16 +218,29 @@ function Register() {
                   <MapPin className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                   <Input
                     id="city"
-                    value="Ihr Ort"
-                    readOnly
-                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-500"
+                    type="text"
+                    placeholder="Ihr Ort"
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
+                    className="h-13 rounded-xl border-gray-300 pl-12 text-base text-gray-700"
+                    required
                   />
                 </div>
               </div>
 
-              <Button className="h-14 w-full rounded-xl bg-green-700 text-lg font-semibold text-white shadow-md hover:bg-green-800">
+              {errorMessage && (
+                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  {errorMessage}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="h-14 w-full rounded-xl bg-green-700 text-lg font-semibold text-white shadow-md hover:bg-green-800"
+              >
                 <UserPlus className="mr-3 h-5 w-5" />
-                Konto erstellen
+                {isLoading ? "Konto wird erstellt..." : "Konto erstellen"}
               </Button>
 
               <div className="flex items-center gap-5">
@@ -174,7 +261,7 @@ function Register() {
                   Zum Login
                 </Link>
               </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
       </div>
