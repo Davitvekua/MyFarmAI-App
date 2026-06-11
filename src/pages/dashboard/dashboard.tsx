@@ -224,8 +224,15 @@ function Dashboard() {
                         <td className="px-6 py-5">
                           {formatArea(field.area_ha)}
                         </td>
-                        <td className="px-6 py-5 text-right text-gray-500">
-                          ⋮
+
+                        <td className="py-5 text-right text-gray-900">
+                          <Link
+                            to={`/fields/${field.id}`}
+                            title="Details"
+                            className="px-6"
+                          >
+                            ⋮
+                          </Link>
                         </td>
                       </tr>
                     ))}

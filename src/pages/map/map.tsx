@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Layers, MapPin, PenTool, Save, Sprout, X } from "lucide-react"
+import {
+  Check,
+  ChevronsUpDown,
+  Layers,
+  MapPin,
+  PenTool,
+  Save,
+  Sprout,
+  X,
+} from "lucide-react"
 import { MapContainer, TileLayer, useMap } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
@@ -14,6 +23,21 @@ import mapBackground from "../../assets/landing-background.jpg"
 import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
 import type { FieldInsert } from "../../types/appTypes"
+
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 type StartDrawing = (() => void) | null
 type ResetDrawing = (() => void) | null
@@ -30,6 +54,40 @@ type PolygonDrawControlProps = {
   onDrawReady: (startDrawing: StartDrawing) => void
   onResetReady: (resetDrawing: ResetDrawing) => void
 }
+
+const cropTypeOptions = [
+  "Weizen",
+  "Mais",
+  "Gerste",
+  "Roggen",
+  "Hafer",
+  "Raps",
+  "Sonnenblume",
+  "Soja",
+  "Kartoffel",
+  "Zuckerrübe",
+  "Luzerne",
+  "Grünland",
+  "Obstbau",
+  "Weinbau",
+  "Gemüse",
+]
+
+const soilTypeOptions = [
+  "Lehmboden",
+  "Sandboden",
+  "Tonboden",
+  "Schluffboden",
+  "Humusboden",
+  "Moorboden",
+  "Kalkboden",
+  "Lössboden",
+  "Schwarzerde",
+  "Kiesboden",
+  "Sandiger Lehm",
+  "Lehmiger Sand",
+  "Mischboden",
+]
 
 function PolygonDrawControl({
   onPolygonCreated,
@@ -96,6 +154,9 @@ function Mapp() {
   const [note, setNote] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+
+  const [cropComboboxOpen, setCropComboboxOpen] = useState(false)
+  const [soilComboboxOpen, setSoilComboboxOpen] = useState(false)
 
   const [mapView, setMapView] = useState<MapView>("street")
 
@@ -363,26 +424,144 @@ function Mapp() {
                     <label className="mb-2 block font-semibold text-gray-800">
                       Kulturart
                     </label>
-                    <input
-                      type="text"
-                      placeholder="z. B. Weizen"
-                      value={cropType}
-                      onChange={(event) => setCropType(event.target.value)}
-                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-700 outline-none"
-                    />
+
+                    <Popover
+                      open={cropComboboxOpen}
+                      onOpenChange={setCropComboboxOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={cropComboboxOpen}
+                          className="h-12 w-full justify-between rounded-lg border! border-gray-300! bg-white px-4 text-left font-normal text-gray-700 shadow-none hover:bg-white focus-visible:ring-2 focus-visible:ring-green-100"
+                        >
+                          <span
+                            className={
+                              cropType ? "text-gray-700" : "text-gray-400"
+                            }
+                          >
+                            {cropType || "Kulturart auswählen oder eingeben"}
+                          </span>
+
+                          <ChevronsUpDown className="h-4 w-4 shrink-0 text-gray-500" />
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+                        <Command shouldFilter>
+                          <CommandInput
+                            placeholder="Kulturart suchen oder eingeben..."
+                            value={cropType}
+                            onValueChange={setCropType}
+                            className="h-11"
+                          />
+
+                          <CommandList>
+                            <CommandEmpty>
+                              Keine passende Kulturart. Du kannst den
+                              eingegebenen Text trotzdem speichern.
+                            </CommandEmpty>
+
+                            <CommandGroup>
+                              {cropTypeOptions.map((option) => (
+                                <CommandItem
+                                  key={option}
+                                  value={option}
+                                  onSelect={(selectedValue) => {
+                                    setCropType(selectedValue)
+                                    setCropComboboxOpen(false)
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      cropType === option
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    }`}
+                                  />
+                                  {option}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div>
                     <label className="mb-2 block font-semibold text-gray-800">
                       Bodenart
                     </label>
-                    <input
-                      type="text"
-                      placeholder="z. B. Lehmboden"
-                      value={soilType}
-                      onChange={(event) => setSoilType(event.target.value)}
-                      className="h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-gray-700 outline-none"
-                    />
+
+                    <Popover
+                      open={soilComboboxOpen}
+                      onOpenChange={setSoilComboboxOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={soilComboboxOpen}
+                          className="h-12 w-full justify-between rounded-lg border! border-gray-300! bg-white px-4 text-left font-normal text-gray-700 shadow-none hover:bg-white focus-visible:ring-2 focus-visible:ring-green-100"
+                        >
+                          <span
+                            className={
+                              soilType ? "text-gray-700" : "text-gray-400"
+                            }
+                          >
+                            {soilType || "Bodenart auswählen oder eingeben"}
+                          </span>
+
+                          <ChevronsUpDown className="h-4 w-4 shrink-0 text-gray-500" />
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+                        <Command shouldFilter>
+                          <CommandInput
+                            placeholder="Bodenart suchen oder eingeben..."
+                            value={soilType}
+                            onValueChange={setSoilType}
+                            className="h-11"
+                          />
+
+                          <CommandList>
+                            <CommandEmpty>
+                              Keine passende Bodenart. Du kannst den
+                              eingegebenen Text trotzdem speichern.
+                            </CommandEmpty>
+
+                            <CommandGroup>
+                              {soilTypeOptions.map((option) => (
+                                <CommandItem
+                                  key={option}
+                                  value={option}
+                                  onSelect={(selectedValue) => {
+                                    setSoilType(selectedValue)
+                                    setSoilComboboxOpen(false)
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      soilType === option
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    }`}
+                                  />
+                                  {option}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div>
