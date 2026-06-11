@@ -17,6 +17,7 @@ import type { FieldInsert } from "../../types/appTypes"
 
 type StartDrawing = (() => void) | null
 type ResetDrawing = (() => void) | null
+type MapView = "street" | "satellite"
 
 type DrawCreatedEvent = L.LeafletEvent & {
   layer: L.Layer & {
@@ -96,6 +97,8 @@ function Mapp() {
   const [errorMessage, setErrorMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const [mapView, setMapView] = useState<MapView>("street")
+
   const [startDrawing, setStartDrawing] = useState<StartDrawing>(null)
   const [resetDrawing, setResetDrawing] = useState<ResetDrawing>(null)
 
@@ -165,6 +168,12 @@ function Mapp() {
     setAreaHa(null)
     setCenterLat(null)
     setCenterLng(null)
+  }
+
+  function handleToggleMapView() {
+    setMapView((currentView) =>
+      currentView === "street" ? "satellite" : "street"
+    )
   }
 
   async function handleSaveField() {
@@ -285,12 +294,19 @@ function Mapp() {
                   center={[48.123456, 11.123456]}
                   zoom={15}
                   scrollWheelZoom
-                  className="h-140 w-full"
+                  className="h-full w-full"
                 >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
+                  {mapView === "street" ? (
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                  ) : (
+                    <TileLayer
+                      attribution="Tiles &copy; Esri"
+                      url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                    />
+                  )}
 
                   <PolygonDrawControl
                     onPolygonCreated={handlePolygonCreated}
@@ -299,7 +315,16 @@ function Mapp() {
                   />
                 </MapContainer>
 
-                <button className="absolute top-36 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md">
+                <button
+                  type="button"
+                  onClick={handleToggleMapView}
+                  title={
+                    mapView === "street"
+                      ? "Satellitenansicht anzeigen"
+                      : "Kartenansicht anzeigen"
+                  }
+                  className="absolute top-36 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md"
+                >
                   <Layers className="h-7 w-7" />
                 </button>
 

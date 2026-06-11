@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom"
 import {
   ArrowLeft,
   ClipboardList,
+  Layers,
   Map,
   Pencil,
   Ruler,
@@ -46,6 +47,7 @@ type FieldDetailsField = Pick<
 >
 
 type PolygonPosition = [number, number]
+type MapView = "street" | "satellite"
 
 type FieldMapAutoFitProps = {
   polygonPositions: PolygonPosition[]
@@ -107,6 +109,7 @@ function FieldDetails() {
   const [field, setField] = useState<FieldDetailsField | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
+  const [mapView, setMapView] = useState<MapView>("street")
 
   useEffect(() => {
     async function loadFieldDetails() {
@@ -156,6 +159,12 @@ function FieldDetails() {
 
     return [48.123456, 11.123456]
   }, [field, polygonPositions])
+
+  function handleToggleMapView() {
+    setMapView((currentView) =>
+      currentView === "street" ? "satellite" : "street"
+    )
+  }
 
   function formatArea(areaHa: number | null, areaM2: number | null) {
     const areaHaText =
@@ -286,17 +295,24 @@ function FieldDetails() {
                     </h2>
                   </div>
 
-                  <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                  <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                     <MapContainer
                       center={centerPosition}
                       zoom={15}
                       scrollWheelZoom
                       className="h-82.5 w-full"
                     >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
+                      {mapView === "street" ? (
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                      ) : (
+                        <TileLayer
+                          attribution="Tiles &copy; Esri"
+                          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                        />
+                      )}
 
                       <FieldMapAutoFit
                         polygonPositions={polygonPositions}
@@ -327,6 +343,19 @@ function FieldDetails() {
                           />
                         )}
                     </MapContainer>
+
+                    <button
+                      type="button"
+                      onClick={handleToggleMapView}
+                      title={
+                        mapView === "street"
+                          ? "Satellitenansicht anzeigen"
+                          : "Kartenansicht anzeigen"
+                      }
+                      className="absolute top-5 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md"
+                    >
+                      <Layers className="h-7 w-7" />
+                    </button>
                   </div>
                 </div>
               </section>
