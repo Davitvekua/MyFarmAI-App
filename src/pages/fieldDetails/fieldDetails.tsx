@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import {
   ArrowLeft,
@@ -13,9 +13,18 @@ import {
   User,
   Waves,
 } from "lucide-react"
+import {
+  CircleMarker,
+  MapContainer,
+  Polygon,
+  TileLayer,
+  useMap,
+} from "react-leaflet"
+import L from "leaflet"
+import "leaflet/dist/leaflet.css"
+import type { Polygon as GeoJsonPolygon } from "geojson"
 
 import fieldBackground from "../../assets/landing-background.jpg"
-import fieldMapPreview from "../../assets/field-map-preview.jpg"
 
 import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
@@ -33,7 +42,63 @@ type FieldDetailsField = Pick<
   | "area_ha"
   | "center_lat"
   | "center_lng"
+  | "polygon"
 >
+
+type PolygonPosition = [number, number]
+
+type FieldMapAutoFitProps = {
+  polygonPositions: PolygonPosition[]
+  centerPosition: PolygonPosition
+}
+
+function FieldMapAutoFit({
+  polygonPositions,
+  centerPosition,
+}: FieldMapAutoFitProps) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (polygonPositions.length > 0) {
+      const bounds = L.latLngBounds(polygonPositions)
+      map.fitBounds(bounds, {
+        padding: [30, 30],
+      })
+      return
+    }
+
+    map.setView(centerPosition, 15)
+  }, [map, polygonPositions, centerPosition])
+
+  return null
+}
+
+function getPolygonPositions(
+  polygon: FieldDetailsField["polygon"]
+): PolygonPosition[] {
+  if (!polygon || typeof polygon !== "object" || Array.isArray(polygon)) {
+    return []
+  }
+
+  const geoJsonPolygon = polygon as unknown as GeoJsonPolygon
+
+  if (geoJsonPolygon.type !== "Polygon") {
+    return []
+  }
+
+  const firstRing = geoJsonPolygon.coordinates[0]
+
+  if (!firstRing) {
+    return []
+  }
+
+  return firstRing.map((coordinate) => {
+    const lng = coordinate[0]
+    const lat = coordinate[1]
+
+    return [lat, lng] as PolygonPosition
+  })
+}
 
 function FieldDetails() {
   const { fieldId } = useParams()
@@ -53,7 +118,7 @@ function FieldDetails() {
       const { data, error } = await supabase
         .from("fields")
         .select(
-          "id, user_id, name, crop_type, soil_type, note, area_m2, area_ha, center_lat, center_lng"
+          "id, user_id, name, crop_type, soil_type, note, area_m2, area_ha, center_lat, center_lng, polygon"
         )
         .eq("id", fieldId)
         .eq("user_id", user.id)
@@ -71,6 +136,26 @@ function FieldDetails() {
 
     loadFieldDetails()
   }, [fieldId, user])
+
+  const polygonPositions = useMemo(() => {
+    if (!field) {
+      return []
+    }
+
+    return getPolygonPositions(field.polygon)
+  }, [field])
+
+  const centerPosition = useMemo<PolygonPosition>(() => {
+    if (field && field.center_lat !== null && field.center_lng !== null) {
+      return [field.center_lat, field.center_lng]
+    }
+
+    if (polygonPositions.length > 0) {
+      return polygonPositions[0]
+    }
+
+    return [48.123456, 11.123456]
+  }, [field, polygonPositions])
 
   function formatArea(areaHa: number | null, areaM2: number | null) {
     const areaHaText =
@@ -202,11 +287,46 @@ function FieldDetails() {
                   </div>
 
                   <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <img
-                      src={fieldMapPreview}
-                      alt="Karten-Vorschau der Fläche"
-                      className="h-82.5 w-full object-cover"
-                    />
+                    <MapContainer
+                      center={centerPosition}
+                      zoom={15}
+                      scrollWheelZoom
+                      className="h-82.5 w-full"
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+
+                      <FieldMapAutoFit
+                        polygonPositions={polygonPositions}
+                        centerPosition={centerPosition}
+                      />
+
+                      {polygonPositions.length > 0 && (
+                        <Polygon
+                          positions={polygonPositions}
+                          pathOptions={{
+                            color: "#166534",
+                            fillColor: "#22c55e",
+                            fillOpacity: 0.25,
+                          }}
+                        />
+                      )}
+
+                      {field.center_lat !== null &&
+                        field.center_lng !== null && (
+                          <CircleMarker
+                            center={[field.center_lat, field.center_lng]}
+                            radius={7}
+                            pathOptions={{
+                              color: "#166534",
+                              fillColor: "#166534",
+                              fillOpacity: 1,
+                            }}
+                          />
+                        )}
+                    </MapContainer>
                   </div>
                 </div>
               </section>
