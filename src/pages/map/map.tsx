@@ -449,22 +449,25 @@ function Mapp() {
                         </Button>
                       </PopoverTrigger>
 
-                      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
-                        <Command shouldFilter>
+                      <PopoverContent className="w-(--radix-popover-trigger-width) overflow-hidden rounded-xl border! border-green-200! bg-[linear-gradient(180deg,#ffffff_0%,#f7f8ef_100%)] p-0 text-gray-900 shadow-xl">
+                        <Command
+                          shouldFilter
+                          className="bg-transparent text-gray-900"
+                        >
                           <CommandInput
                             placeholder="Kulturart suchen oder eingeben..."
                             value={cropType}
                             onValueChange={setCropType}
-                            className="h-11"
+                            className="h-12 border-b border-green-100 bg-white/90 text-gray-900 placeholder:text-gray-400"
                           />
 
-                          <CommandList>
-                            <CommandEmpty>
+                          <CommandList className="max-h-64 bg-transparent px-2 py-2">
+                            <CommandEmpty className="px-4 py-5 text-center text-sm text-gray-500">
                               Keine passende Kulturart. Du kannst den
                               eingegebenen Text trotzdem speichern.
                             </CommandEmpty>
 
-                            <CommandGroup>
+                            <CommandGroup className="space-y-1">
                               {cropTypeOptions.map((option) => (
                                 <CommandItem
                                   key={option}
@@ -473,10 +476,10 @@ function Mapp() {
                                     setCropType(selectedValue)
                                     setCropComboboxOpen(false)
                                   }}
-                                  className="cursor-pointer"
+                                  className="cursor-pointer rounded-lg px-3 py-2.5 text-gray-700 transition data-[selected=true]:bg-green-100 data-[selected=true]:text-green-950"
                                 >
                                   <Check
-                                    className={`mr-2 h-4 w-4 ${
+                                    className={`mr-2 h-4 w-4 text-green-800 ${
                                       cropType === option
                                         ? "opacity-100"
                                         : "opacity-0"
@@ -521,22 +524,25 @@ function Mapp() {
                         </Button>
                       </PopoverTrigger>
 
-                      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
-                        <Command shouldFilter>
+                      <PopoverContent className="w-(--radix-popover-trigger-width) overflow-hidden rounded-xl border! border-green-200! bg-[linear-gradient(180deg,#ffffff_0%,#f7f8ef_100%)] p-0 text-gray-900 shadow-xl">
+                        <Command
+                          shouldFilter
+                          className="bg-transparent text-gray-900"
+                        >
                           <CommandInput
                             placeholder="Bodenart suchen oder eingeben..."
                             value={soilType}
                             onValueChange={setSoilType}
-                            className="h-11"
+                            className="h-12 border-b border-green-100 bg-white/90 text-gray-900 placeholder:text-gray-400"
                           />
 
-                          <CommandList>
-                            <CommandEmpty>
+                          <CommandList className="max-h-64 bg-transparent px-2 py-2">
+                            <CommandEmpty className="px-4 py-5 text-center text-sm text-gray-500">
                               Keine passende Bodenart. Du kannst den
                               eingegebenen Text trotzdem speichern.
                             </CommandEmpty>
 
-                            <CommandGroup>
+                            <CommandGroup className="space-y-1">
                               {soilTypeOptions.map((option) => (
                                 <CommandItem
                                   key={option}
@@ -545,10 +551,10 @@ function Mapp() {
                                     setSoilType(selectedValue)
                                     setSoilComboboxOpen(false)
                                   }}
-                                  className="cursor-pointer"
+                                  className="cursor-pointer rounded-lg px-3 py-2.5 text-gray-700 transition data-[selected=true]:bg-green-100 data-[selected=true]:text-green-950"
                                 >
                                   <Check
-                                    className={`mr-2 h-4 w-4 ${
+                                    className={`mr-2 h-4 w-4 text-green-800 ${
                                       soilType === option
                                         ? "opacity-100"
                                         : "opacity-0"
