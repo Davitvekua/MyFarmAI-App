@@ -39,6 +39,7 @@ function Fields() {
   const [fields, setFields] = useState<FieldsListField[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
+  const [deletingFieldId, setDeletingFieldId] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadFields() {
@@ -78,6 +79,40 @@ function Fields() {
     }
 
     return <Wheat className="h-7 w-7" />
+  }
+
+  async function handleDeleteField(fieldId: string, fieldName: string) {
+    setErrorMessage("")
+
+    if (!user) {
+      setErrorMessage("Du musst eingeloggt sein, um eine Fläche zu löschen.")
+      return
+    }
+
+    const shouldDelete = window.confirm(
+      `Möchtest du die Fläche "${fieldName}" wirklich löschen?`
+    )
+
+    if (!shouldDelete) return
+
+    setDeletingFieldId(fieldId)
+
+    const { error } = await supabase
+      .from("fields")
+      .delete()
+      .eq("id", fieldId)
+      .eq("user_id", user.id)
+
+    setDeletingFieldId(null)
+
+    if (error) {
+      setErrorMessage("Fläche konnte nicht gelöscht werden.")
+      return
+    }
+
+    setFields((currentFields) =>
+      currentFields.filter((field) => field.id !== fieldId)
+    )
   }
 
   return (
@@ -250,11 +285,19 @@ function Fields() {
                               </Button>
 
                               <Button
+                                type="button"
                                 variant="outline"
-                                className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                disabled={deletingFieldId === field.id}
+                                onClick={() =>
+                                  handleDeleteField(field.id, field.name)
+                                }
+                                className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Löschen
+                                {" "}
+                                <Trash2 className="mr-2 h-4 w-4" />{" "}
+                                {deletingFieldId === field.id
+                                  ? "Löscht..."
+                                  : "Löschen"}{" "}
                               </Button>
                             </div>
                           </td>

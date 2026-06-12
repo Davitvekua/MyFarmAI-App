@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {
   ArrowLeft,
   ClipboardList,
@@ -105,11 +105,13 @@ function getPolygonPositions(
 function FieldDetails() {
   const { fieldId } = useParams()
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   const [field, setField] = useState<FieldDetailsField | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
   const [mapView, setMapView] = useState<MapView>("street")
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     async function loadFieldDetails() {
@@ -181,6 +183,43 @@ function FieldDetails() {
     }
 
     return `${centerLat}, ${centerLng}`
+  }
+
+  async function handleDeleteField() {
+    setErrorMessage("")
+
+    if (!user) {
+      setErrorMessage("Du musst eingeloggt sein, um diese Fläche zu löschen.")
+      return
+    }
+
+    if (!fieldId || !field) {
+      setErrorMessage("Keine gültige Fläche ausgewählt.")
+      return
+    }
+
+    const shouldDelete = window.confirm(
+      `Möchtest du die Fläche "${field.name}" wirklich löschen?`
+    )
+
+    if (!shouldDelete) return
+
+    setIsDeleting(true)
+
+    const { error } = await supabase
+      .from("fields")
+      .delete()
+      .eq("id", fieldId)
+      .eq("user_id", user.id)
+
+    setIsDeleting(false)
+
+    if (error) {
+      setErrorMessage("Fläche konnte nicht gelöscht werden.")
+      return
+    }
+
+    navigate("/fields")
   }
 
   return (
@@ -405,9 +444,15 @@ function FieldDetails() {
                     Auf Karte anzeigen
                   </Link>
 
-                  <button className="flex items-center justify-center gap-3 rounded-lg border border-red-500 bg-white px-6 py-4 text-lg font-semibold text-red-600 hover:bg-red-50">
-                    <Trash2 className="h-5 w-5" />
-                    Löschen
+                  <button
+                    type="button"
+                    onClick={handleDeleteField}
+                    disabled={isDeleting}
+                    className="flex items-center justify-center gap-3 rounded-lg border border-red-500 bg-white px-6 py-4 text-lg font-semibold text-red-600 hover:bg-red-50 disabled:opacity-60"
+                  >
+                    {" "}
+                    <Trash2 className="h-5 w-5" />{" "}
+                    {isDeleting ? "Löscht..." : "Löschen"}{" "}
                   </button>
                 </div>
               </section>
