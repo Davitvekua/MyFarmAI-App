@@ -221,10 +221,13 @@ function FieldDetails() {
                   </div>
                 </div>
 
-                <button className="flex items-center gap-3 rounded-lg bg-green-700 px-8 py-4 text-lg font-semibold text-white shadow-md hover:bg-green-800">
+                <Link
+                  to={`/fields/${field.id}/edit`}
+                  className="flex items-center gap-3 rounded-lg bg-green-700 px-8 py-4 text-lg font-semibold text-white shadow-md hover:bg-green-800"
+                >
                   <Pencil className="h-5 w-5" />
                   Bearbeiten
-                </button>
+                </Link>
               </section>
 
               <section className="mb-6 grid grid-cols-[1fr_1.4fr] gap-8 rounded-2xl bg-white/95 p-8 shadow-lg">

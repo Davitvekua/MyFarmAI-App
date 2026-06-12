@@ -11,6 +11,7 @@ import Register from "./pages/register/register"
 import Dashboard from "./pages/dashboard/dashboard"
 import Fields from "./pages/fields/fields"
 import FieldDetails from "./pages/fieldDetails/fieldDetails"
+import FieldEdit from "./pages/fieldEdit/fieldEdit"
 import Mapp from "./pages/map/map"
 import Kontakt from "./pages/kontakt/kontakt"
 import Impressum from "./pages/impressum/impressum"
@@ -48,6 +49,14 @@ function App() {
             element: (
               <ProtectedRoute>
                 <FieldDetails />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "fields/:fieldId/edit",
+            element: (
+              <ProtectedRoute>
+                <FieldEdit />
               </ProtectedRoute>
             ),
           },

@@ -239,11 +239,14 @@ function Fields() {
                               </Button>
 
                               <Button
+                                asChild
                                 variant="outline"
                                 className="border-green-700 text-green-800 hover:bg-green-50 hover:text-green-900"
                               >
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Bearbeiten
+                                <Link to={`/fields/${field.id}/edit`}>
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Bearbeiten
+                                </Link>
                               </Button>
 
                               <Button
