@@ -1,0 +1,33 @@
+export const cropTypeOptions = [
+  "Weizen",
+  "Mais",
+  "Gerste",
+  "Roggen",
+  "Hafer",
+  "Raps",
+  "Sonnenblume",
+  "Soja",
+  "Kartoffel",
+  "Zuckerrübe",
+  "Luzerne",
+  "Grünland",
+  "Obstbau",
+  "Weinbau",
+  "Gemüse",
+]
+
+export const soilTypeOptions = [
+  "Lehmboden",
+  "Sandboden",
+  "Tonboden",
+  "Schluffboden",
+  "Humusboden",
+  "Moorboden",
+  "Kalkboden",
+  "Lössboden",
+  "Schwarzerde",
+  "Kiesboden",
+  "Sandiger Lehm",
+  "Lehmiger Sand",
+  "Mischboden",
+]
