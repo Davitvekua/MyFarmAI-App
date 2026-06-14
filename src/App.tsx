@@ -15,6 +15,7 @@ import FieldEdit from "./pages/fieldEdit/fieldEdit"
 import Mapp from "./pages/map/map"
 import Kontakt from "./pages/kontakt/kontakt"
 import Impressum from "./pages/impressum/impressum"
+import FieldsMap from "./pages/fieldsMap/FieldsMap"
 
 function App() {
   const router = createBrowserRouter(
@@ -68,6 +69,16 @@ function App() {
               </ProtectedRoute>
             ),
           },
+
+          {
+            path: "/fields-map",
+            element: (
+              <ProtectedRoute>
+                <FieldsMap />
+              </ProtectedRoute>
+            ),
+          },
+
           {
             path: "profile",
             element: (

@@ -277,7 +277,7 @@ function Dashboard() {
               </Link>
 
               <Link
-                to="/map"
+                to="/fields-map"
                 className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-8 shadow-sm hover:bg-green-50"
               >
                 <div className="flex items-center gap-6">

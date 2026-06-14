@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from "react-router-dom"
-import { Grid2X2, LogOut, MapPin, Sprout, UserRound } from "lucide-react"
+import { Map, Grid2X2, LogOut, MapPin, Sprout, UserRound } from "lucide-react"
 
 import { useAuth } from "../../../context/AuthContext"
 
@@ -43,6 +43,11 @@ function PrivateHeader() {
         <NavLink to="/map" className={navLinkClass}>
           <MapPin className="h-5 w-5" />
           Karte
+        </NavLink>
+
+        <NavLink to="/fields-map" className={navLinkClass}>
+          <Map className="h-5 w-5" />
+          Flächenkarte
         </NavLink>
 
         <NavLink to="/profile" className={navLinkClass}>
