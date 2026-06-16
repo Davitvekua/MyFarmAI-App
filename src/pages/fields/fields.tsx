@@ -15,18 +15,17 @@ import fieldsBackground from "../../assets/landing-background.jpg"
 
 import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
+import { cropTypeOptions } from "../../data/fieldOptions"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+
 import type { Field } from "@/types/appTypes"
+
+import Combobox from "@/components/Combobox"
+
+const allCropTypesOption = "Alle Kulturarten"
 
 type FieldsListField = Pick<
   Field,
@@ -40,6 +39,10 @@ function Fields() {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
   const [deletingFieldId, setDeletingFieldId] = useState<string | null>(null)
+
+  const [selectedCropType, setSelectedCropType] = useState("")
+  const [cropComboboxOpen, setCropComboboxOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     async function loadFields() {
@@ -66,6 +69,37 @@ function Fields() {
 
     loadFields()
   }, [user])
+
+  const cropTypeFilterOptions = [allCropTypesOption, ...cropTypeOptions]
+
+  const filteredFields = fields.filter((field) => {
+    const matchesSearch1 = field.name
+      .toLowerCase()
+      .includes(searchTerm.trim().toLowerCase())
+
+    const matchesSearch2 = field.soil_type
+      ?.toLowerCase()
+      .includes(searchTerm.trim().toLowerCase())
+
+    const matchesSearch3 = field.area_ha
+      ?.toLocaleString("de-DE")
+      .includes(searchTerm.trim())
+
+    const matchesSearch4 = field.crop_type
+      ?.toLowerCase()
+      .includes(searchTerm.trim().toLowerCase())
+
+    const matchesCropType =
+      selectedCropType === allCropTypesOption ||
+      selectedCropType === "" ||
+      field.crop_type?.trim().toLowerCase() ===
+        selectedCropType.trim().toLowerCase()
+
+    return (
+      (matchesSearch1 || matchesSearch2 || matchesSearch3 || matchesSearch4) &&
+      matchesCropType
+    )
+  })
 
   function formatArea(areaHa: number | null) {
     if (areaHa === null) return "-"
@@ -149,39 +183,38 @@ function Fields() {
             </Button>
           </section>
 
-          <Card className="mb-8 rounded-2xl bg-white/95 p-8 shadow-lg">
+          <Card className="mb-8 rounded-2xl bg-white/95 p-8 pt-6 shadow-lg">
             <CardContent className="grid grid-cols-2 gap-8 p-0">
-              <div>
-                <p className="mb-3 text-lg font-semibold text-gray-800">
+              <div className="mt-1.5">
+                <p className="mb-2 text-lg font-semibold text-gray-800">
                   Suche / Filter
                 </p>
 
                 <div className="relative">
                   <Search className="absolute top-1/2 left-4 h-6 w-6 -translate-y-1/2 text-gray-500" />
                   <Input
-                    value="Fläche suchen..."
-                    readOnly
-                    className="h-14 rounded-xl border-gray-300 pl-14 text-lg text-gray-500"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="freie Suche"
+                    className="h-12 border-gray-300 pl-14 text-lg text-gray-700"
                   />
                 </div>
               </div>
 
               <div>
-                <p className="mb-3 text-lg font-semibold text-gray-800">
-                  Filter: Kulturart
-                </p>
-
-                <Select disabled>
-                  <SelectTrigger className="h-14 rounded-xl border-gray-300 px-5 text-lg text-gray-500">
-                    <SelectValue placeholder="Alle Kulturarten" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle Kulturarten</SelectItem>
-                    <SelectItem value="mais">Mais</SelectItem>
-                    <SelectItem value="weizen">Weizen</SelectItem>
-                    <SelectItem value="apfel">Apfel</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="pt-2 text-[1.1rem]">
+                  <Combobox
+                    label="Filter: Kulturart"
+                    placeholder="Alle Kulturarten"
+                    searchPlaceholder="Kulturart suchen..."
+                    emptyMessage="Keine passende Kulturart gefunden."
+                    value={selectedCropType}
+                    options={cropTypeFilterOptions}
+                    open={cropComboboxOpen}
+                    onOpenChange={setCropComboboxOpen}
+                    onValueChange={setSelectedCropType}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -216,7 +249,16 @@ function Fields() {
                 </p>
               )}
 
-              {!isLoading && !errorMessage && fields.length > 0 && (
+              {!isLoading &&
+                !errorMessage &&
+                fields.length > 0 &&
+                filteredFields.length === 0 && (
+                  <p className="rounded-xl bg-white px-6 py-6 text-lg text-gray-700">
+                    Keine Flächen mit dieser Kulturart gefunden.
+                  </p>
+                )}
+
+              {!isLoading && !errorMessage && filteredFields.length > 0 && (
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                   <table className="w-full border-collapse text-left">
                     <thead>
@@ -232,11 +274,11 @@ function Fields() {
                     </thead>
 
                     <tbody className="text-gray-700">
-                      {fields.map((field, index) => (
+                      {filteredFields.map((field, index) => (
                         <tr
                           key={field.id}
                           className={
-                            index === fields.length - 1
+                            index === filteredFields.length - 1
                               ? ""
                               : "border-b border-gray-100"
                           }
@@ -293,11 +335,10 @@ function Fields() {
                                 }
                                 className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
                               >
-                                {" "}
-                                <Trash2 className="mr-2 h-4 w-4" />{" "}
+                                <Trash2 className="mr-2 h-4 w-4" />
                                 {deletingFieldId === field.id
                                   ? "Löscht..."
-                                  : "Löschen"}{" "}
+                                  : "Löschen"}
                               </Button>
                             </div>
                           </td>
