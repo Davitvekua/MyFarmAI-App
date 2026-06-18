@@ -16,6 +16,7 @@ import Mapp from "./pages/map/map"
 import Kontakt from "./pages/kontakt/kontakt"
 import Impressum from "./pages/impressum/impressum"
 import FieldsMap from "./pages/fieldsMap/FieldsMap"
+import UpdatePassword from "./pages/updatePassword/UpdatePassword"
 
 function App() {
   const router = createBrowserRouter(
@@ -28,6 +29,7 @@ function App() {
           { index: true, element: <Landing /> },
           { path: "login", element: <Login /> },
           { path: "register", element: <Register /> },
+          { path: "update-password", element: <UpdatePassword /> },
 
           {
             path: "dashboard",

@@ -153,7 +153,7 @@ function Landing() {
         className="bg-cover bg-center px-20 py-8"
         style={{ backgroundImage: `url(${landingBackground})` }}
       >
-        <div className="mx-auto flex max-w-5xl items-center justify-between rounded-2xl bg-white/95 px-12 py-8 shadow-lg">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-2xl bg-white/95 px-12 py-8 shadow-lg">
           <div className="flex items-center gap-8">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-800">
               <Users className="h-12 w-12" />
