@@ -4,7 +4,6 @@ import { Lock, LogIn, Mail } from "lucide-react"
 
 import loginBackground from "../../assets/landing-background.jpg"
 import { supabase } from "../../lib/supabaseClient"
-import ResetPassword from "./ResetPassword"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -16,7 +15,6 @@ function Login() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [showResetPassword, setShowResetPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -97,18 +95,13 @@ function Login() {
                   />
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowResetPassword((current) => !current)}
+                <Link
+                  to="/reset-password"
                   className="text-sm font-semibold text-green-800 hover:text-green-900"
                 >
                   Passwort vergessen?
-                </button>
+                </Link>
               </div>
-
-              {showResetPassword && (
-                <ResetPassword onCancel={() => setShowResetPassword(false)} />
-              )}
 
               {errorMessage && (
                 <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">

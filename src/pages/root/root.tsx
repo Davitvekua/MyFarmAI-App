@@ -10,6 +10,7 @@ function Root() {
     "/",
     "/login",
     "/register",
+    "/reset-password",
     "/update-password",
     "/kontakt",
     "/impressum",

@@ -17,6 +17,7 @@ import Kontakt from "./pages/kontakt/kontakt"
 import Impressum from "./pages/impressum/impressum"
 import FieldsMap from "./pages/fieldsMap/FieldsMap"
 import UpdatePassword from "./pages/updatePassword/UpdatePassword"
+import ResetPassword from "./pages/resetPassword/ResetPassword"
 
 function App() {
   const router = createBrowserRouter(
@@ -29,6 +30,7 @@ function App() {
           { index: true, element: <Landing /> },
           { path: "login", element: <Login /> },
           { path: "register", element: <Register /> },
+          { path: "reset-password", element: <ResetPassword /> },
           { path: "update-password", element: <UpdatePassword /> },
 
           {

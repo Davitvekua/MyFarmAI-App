@@ -18,7 +18,9 @@ function Landing() {
     <main className="overflow-hidden bg-white text-gray-900">
       <section
         className="grid min-h-92.5 grid-cols-2 items-center bg-cover bg-center px-20 py-12"
-        style={{ backgroundImage: `url(${landingBackground})` }}
+        style={{
+          backgroundImage: `url(${landingBackground})`,
+        }}
       >
         <div>
           <h1 className="max-w-xl text-5xl leading-tight font-bold text-green-950">
