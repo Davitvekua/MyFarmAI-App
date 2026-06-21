@@ -27,24 +27,12 @@ import type { Polygon as GeoJsonPolygon } from "geojson"
 
 import fieldBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
-import type { Field } from "@/types/appTypes"
-
-type FieldDetailsField = Pick<
-  Field,
-  | "id"
-  | "user_id"
-  | "name"
-  | "crop_type"
-  | "soil_type"
-  | "note"
-  | "area_m2"
-  | "area_ha"
-  | "center_lat"
-  | "center_lng"
-  | "polygon"
->
+import type { FieldDetailsField } from "@/types/appTypes"
+import {
+  deleteFieldForFieldDetails,
+  loadFieldForFieldDetails,
+} from "@/apiService/FieldsApi"
 
 type PolygonPosition = [number, number]
 type MapView = "street" | "satellite"
@@ -120,19 +108,17 @@ function FieldDetails() {
       setIsLoading(true)
       setErrorMessage("")
 
-      const { data, error } = await supabase
-        .from("fields")
-        .select(
-          "id, user_id, name, crop_type, soil_type, note, area_m2, area_ha, center_lat, center_lng, polygon"
-        )
-        .eq("id", fieldId)
-        .eq("user_id", user.id)
-        .single()
+      const { data, error } = await loadFieldForFieldDetails(user, fieldId)
 
       setIsLoading(false)
 
       if (error) {
         setErrorMessage("Fläche konnte nicht geladen werden.")
+        return
+      }
+
+      if (!data) {
+        setErrorMessage("Fläche wurde nicht gefunden.")
         return
       }
 
@@ -206,11 +192,7 @@ function FieldDetails() {
 
     setIsDeleting(true)
 
-    const { error } = await supabase
-      .from("fields")
-      .delete()
-      .eq("id", fieldId)
-      .eq("user_id", user.id)
+    const error = await deleteFieldForFieldDetails(fieldId, user.id)
 
     setIsDeleting(false)
 

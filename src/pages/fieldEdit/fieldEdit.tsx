@@ -17,32 +17,20 @@ import type { Feature, Polygon as GeoJsonPolygon } from "geojson"
 
 import fieldBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
-import type { Field, FieldUpdate } from "@/types/appTypes"
+import type { FieldEditField, FieldUpdate } from "@/types/appTypes"
 
 import Combobox from "@/components/Combobox"
 import { cropTypeOptions, soilTypeOptions } from "@/data/fieldOptions"
+import {
+  loadFieldForFieldEdit,
+  updateFieldForFieldEdit,
+} from "@/apiService/FieldsApi"
 
 type StartDrawing = (() => void) | null
 type ResetDrawing = (() => void) | null
 type MapView = "street" | "satellite"
 type PolygonPosition = [number, number]
-
-type FieldEditField = Pick<
-  Field,
-  | "id"
-  | "user_id"
-  | "name"
-  | "crop_type"
-  | "soil_type"
-  | "note"
-  | "area_m2"
-  | "area_ha"
-  | "center_lat"
-  | "center_lng"
-  | "polygon"
->
 
 type DrawCreatedEvent = L.LeafletEvent & {
   layer: L.Layer & {
@@ -217,19 +205,17 @@ function FieldEdit() {
       setIsLoading(true)
       setErrorMessage("")
 
-      const { data, error } = await supabase
-        .from("fields")
-        .select(
-          "id, user_id, name, crop_type, soil_type, note, area_m2, area_ha, center_lat, center_lng, polygon"
-        )
-        .eq("id", fieldId)
-        .eq("user_id", user.id)
-        .single()
+      const { data, error } = await loadFieldForFieldEdit(fieldId, user.id)
 
       setIsLoading(false)
 
       if (error) {
         setErrorMessage("Fläche konnte nicht geladen werden.")
+        return
+      }
+
+      if (!data) {
+        setErrorMessage("Fläche wurde nicht gefunden.")
         return
       }
 
@@ -371,11 +357,7 @@ function FieldEdit() {
       polygon: polygon as unknown as FieldUpdate["polygon"],
     }
 
-    const { error } = await supabase
-      .from("fields")
-      .update(updatedField)
-      .eq("id", fieldId)
-      .eq("user_id", user.id)
+    const error = await updateFieldForFieldEdit(fieldId, user.id, updatedField)
 
     setIsSaving(false)
 

@@ -3,12 +3,12 @@ import { Link, useNavigate } from "react-router-dom"
 import { Lock, LogIn, Mail } from "lucide-react"
 
 import loginBackground from "../../assets/landing-background.jpg"
-import { supabase } from "../../lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginUser } from "@/apiService/AuthApi"
 
 function Login() {
   const navigate = useNavigate()
@@ -24,10 +24,7 @@ function Login() {
     setErrorMessage("")
     setIsLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const error = await loginUser(email, password)
 
     setIsLoading(false)
 

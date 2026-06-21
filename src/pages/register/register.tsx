@@ -12,12 +12,12 @@ import {
 } from "lucide-react"
 
 import registerBackground from "../../assets/landing-background.jpg"
-import { supabase } from "../../lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { registerUserWithProfile } from "@/apiService/AuthApi"
 
 function Register() {
   const navigate = useNavigate()
@@ -37,36 +37,28 @@ function Register() {
     setErrorMessage("")
     setIsLoading(true)
 
-    const { data, error } = await supabase.auth.signUp({
+    const result = await registerUserWithProfile({
       email,
       password,
-    })
-
-    if (error) {
-      setIsLoading(false)
-      setErrorMessage("Registrierung fehlgeschlagen. Bitte Eingaben prüfen.")
-      return
-    }
-
-    const userId = data.user?.id
-
-    if (!userId) {
-      setIsLoading(false)
-      setErrorMessage("Nutzer konnte nicht erstellt werden.")
-      return
-    }
-
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: userId,
-      first_name: firstName,
-      last_name: lastName,
+      firstName,
+      lastName,
       country,
       city,
     })
 
     setIsLoading(false)
 
-    if (profileError) {
+    if (!result.success) {
+      if (result.reason === "register-failed") {
+        setErrorMessage("Registrierung fehlgeschlagen. Bitte Eingaben prüfen.")
+        return
+      }
+
+      if (result.reason === "user-id-missing") {
+        setErrorMessage("Nutzer konnte nicht erstellt werden.")
+        return
+      }
+
       setErrorMessage("Profil konnte nicht gespeichert werden.")
       return
     }

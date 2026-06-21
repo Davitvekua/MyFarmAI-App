@@ -11,12 +11,12 @@ import type { Feature, Polygon as GeoJsonPolygon } from "geojson"
 
 import mapBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
 import type { FieldInsert } from "../../types/appTypes"
 
 import Combobox from "@/components/Combobox"
 import { cropTypeOptions, soilTypeOptions } from "@/data/fieldOptions"
+import { createFieldFromMap } from "@/apiService/FieldsApi"
 
 type StartDrawing = (() => void) | null
 type ResetDrawing = (() => void) | null
@@ -209,7 +209,7 @@ function Mapp() {
 
     const newField: FieldInsert = {
       user_id: user.id,
-      name,
+      name: name.trim(),
       crop_type: cropType,
       soil_type: soilType,
       note,
@@ -220,7 +220,7 @@ function Mapp() {
       polygon: polygon as unknown as FieldInsert["polygon"],
     }
 
-    const { error } = await supabase.from("fields").insert(newField)
+    const error = await createFieldFromMap(newField)
 
     setIsLoading(false)
 

@@ -4,13 +4,16 @@ import { KeyRound, LogOut, Save, User } from "lucide-react"
 
 import profileBackground from "../../assets/profile_background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import ChangePassword from "./ChangePassword"
+import { loadProfileForProfilePage } from "@/apiService/ProfileApi"
+import type { ProfileInsert } from "@/types/appTypes"
+import { saveProfileForProfilePage } from "@/apiService/FieldsApi"
+import { logoutUser } from "@/apiService/AuthApi"
 
 type ProfileForm = {
   firstName: string
@@ -83,11 +86,7 @@ function Profile() {
       setErrorMessage("")
       setSuccessMessage("")
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("first_name, last_name, country, city")
-        .eq("id", user.id)
-        .maybeSingle()
+      const { data, error } = await loadProfileForProfilePage(user.id)
 
       setIsLoading(false)
 
@@ -96,7 +95,7 @@ function Profile() {
         return
       }
 
-      const loadedProfileForm = {
+      const loadedProfileForm: ProfileForm = {
         firstName: data?.first_name ?? "",
         lastName: data?.last_name ?? "",
         country: data?.country ?? "",
@@ -132,16 +131,15 @@ function Profile() {
 
     const normalizedProfileForm = normalizeProfileForm(profileForm)
 
-    const { error } = await supabase.from("profiles").upsert(
-      {
-        id: user.id,
-        first_name: normalizedProfileForm.firstName || null,
-        last_name: normalizedProfileForm.lastName || null,
-        country: normalizedProfileForm.country || null,
-        city: normalizedProfileForm.city || null,
-      },
-      { onConflict: "id" }
-    )
+    const profileData: ProfileInsert = {
+      id: user.id,
+      first_name: normalizedProfileForm.firstName || null,
+      last_name: normalizedProfileForm.lastName || null,
+      country: normalizedProfileForm.country || null,
+      city: normalizedProfileForm.city || null,
+    }
+
+    const error = await saveProfileForProfilePage(profileData)
 
     setIsSaving(false)
 
@@ -156,7 +154,13 @@ function Profile() {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut()
+    const error = await logoutUser()
+
+    if (error) {
+      setErrorMessage("Logout fehlgeschlagen.")
+      return
+    }
+
     navigate("/login")
   }
 

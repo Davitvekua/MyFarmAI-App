@@ -4,14 +4,10 @@ import { Link } from "react-router-dom"
 
 import dashboardBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
-import type { Field } from "@/types/appTypes"
-
-type DashboardField = Pick<
-  Field,
-  "id" | "name" | "crop_type" | "soil_type" | "area_ha"
->
+import type { DashboardField } from "@/types/appTypes"
+import { loadProfileforDashboard } from "@/apiService/ProfileApi"
+import { loadFieldsforDashboard } from "@/apiService/FieldsApi"
 
 function Dashboard() {
   const { user } = useAuth()
@@ -22,36 +18,27 @@ function Dashboard() {
   const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
-    async function loadProfile() {
+    async function loadDashboardProfile() {
       if (!user) return
 
-      const { data } = await supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .single()
+      const data = await loadProfileforDashboard(user)
 
-      if (data) {
-        const fullName =
-          `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim()
+      if (!data) return
 
-        if (fullName) {
-          setProfileName(fullName)
-        }
+      const fullName = `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim()
+
+      if (fullName) {
+        setProfileName(fullName)
       }
     }
 
-    async function loadFields() {
+    async function loadDashboardFields() {
       if (!user) return
 
       setIsLoading(true)
       setErrorMessage("")
 
-      const { data, error } = await supabase
-        .from("fields")
-        .select("id, name, crop_type, soil_type, area_ha")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
+      const { data, error } = await loadFieldsforDashboard(user)
 
       setIsLoading(false)
 
@@ -63,8 +50,8 @@ function Dashboard() {
       setFields(data ?? [])
     }
 
-    loadProfile()
-    loadFields()
+    loadDashboardProfile()
+    loadDashboardFields()
   }, [user])
 
   const totalAreaHa = fields.reduce((sum, field) => {

@@ -15,17 +15,12 @@ import type { Polygon as GeoJsonPolygon } from "geojson"
 
 import fieldsMapBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
-import type { Field } from "@/types/appTypes"
+import type { FieldsMapField } from "@/types/appTypes"
+import { loadFieldsForFieldsMap } from "@/apiService/FieldsApi"
 
 type PolygonPosition = [number, number]
 type MapView = "street" | "satellite"
-
-type FieldsMapField = Pick<
-  Field,
-  "id" | "name" | "crop_type" | "soil_type" | "area_ha" | "polygon"
->
 
 type VisibleField = FieldsMapField & {
   positions: PolygonPosition[]
@@ -117,11 +112,7 @@ function FieldsMap() {
       setIsLoading(true)
       setErrorMessage("")
 
-      const { data, error } = await supabase
-        .from("fields")
-        .select("id, name, crop_type, soil_type, area_ha, polygon")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
+      const { data, error } = await loadFieldsForFieldsMap(user.id)
 
       setIsLoading(false)
 

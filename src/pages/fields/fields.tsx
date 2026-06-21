@@ -13,7 +13,6 @@ import {
 
 import fieldsBackground from "../../assets/landing-background.jpg"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
 import { cropTypeOptions } from "../../data/fieldOptions"
 
@@ -21,16 +20,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-import type { Field } from "@/types/appTypes"
+import type { FieldsListField } from "@/types/appTypes"
 
 import Combobox from "@/components/Combobox"
+import {
+  deleteFieldForFieldsList,
+  loadFieldsForFieldsList,
+} from "@/apiService/FieldsApi"
 
 const allCropTypesOption = "Alle Kulturarten"
-
-type FieldsListField = Pick<
-  Field,
-  "id" | "user_id" | "name" | "crop_type" | "soil_type" | "area_ha"
->
 
 function Fields() {
   const { user } = useAuth()
@@ -51,11 +49,7 @@ function Fields() {
       setIsLoading(true)
       setErrorMessage("")
 
-      const { data, error } = await supabase
-        .from("fields")
-        .select("id, user_id, name, crop_type, soil_type, area_ha")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
+      const { data, error } = await loadFieldsForFieldsList(user.id)
 
       setIsLoading(false)
 
@@ -131,11 +125,7 @@ function Fields() {
 
     setDeletingFieldId(fieldId)
 
-    const { error } = await supabase
-      .from("fields")
-      .delete()
-      .eq("id", fieldId)
-      .eq("user_id", user.id)
+    const error = await deleteFieldForFieldsList(fieldId, user.id)
 
     setDeletingFieldId(null)
 

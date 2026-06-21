@@ -1,11 +1,11 @@
 import { useEffect, useState, type SyntheticEvent } from "react"
 import { KeyRound, Save, X } from "lucide-react"
 
-import { supabase } from "../../lib/supabaseClient"
 import { useAuth } from "../../context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { changePasswordWithCurrentPassword } from "@/apiService/AuthApi"
 
 function ChangePassword() {
   const { user } = useAuth()
@@ -86,24 +86,20 @@ function ChangePassword() {
 
     setIsChangingPassword(true)
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: currentPassword,
-    })
-
-    if (signInError) {
-      setIsChangingPassword(false)
-      setPasswordErrorMessage("Das aktuelle Passwort ist nicht korrekt.")
-      return
-    }
-
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
+    const result = await changePasswordWithCurrentPassword(
+      user.email,
+      currentPassword,
+      newPassword
+    )
 
     setIsChangingPassword(false)
 
-    if (updateError) {
+    if (!result.success) {
+      if (result.reason === "wrong-current-password") {
+        setPasswordErrorMessage("Das aktuelle Passwort ist nicht korrekt.")
+        return
+      }
+
       setPasswordErrorMessage("Passwort konnte nicht geändert werden.")
       return
     }

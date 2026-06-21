@@ -1,13 +1,13 @@
-import { useState } from "react"
+import { useState, type SyntheticEvent } from "react"
 import { Link } from "react-router-dom"
 import { ArrowLeft, Mail, Send } from "lucide-react"
 
-import { supabase } from "../../lib/supabaseClient"
 import updatePasswordBackground from "../../assets/landing-background.jpg"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { resetPasswordByEmail } from "@/apiService/AuthApi"
 
 function ResetPassword() {
   const [resetEmail, setResetEmail] = useState("")
@@ -15,7 +15,7 @@ function ResetPassword() {
   const [errorMessage, setErrorMessage] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
 
-  async function handleResetPassword(event: React.FormEvent<HTMLFormElement>) {
+  async function handleResetPassword(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
 
     setErrorMessage("")
@@ -33,12 +33,7 @@ function ResetPassword() {
       window.location.origin + import.meta.env.BASE_URL
     ).toString()
 
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      resetEmail.trim(),
-      {
-        redirectTo,
-      }
-    )
+    const error = await resetPasswordByEmail(resetEmail, redirectTo)
 
     setIsSending(false)
 

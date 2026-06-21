@@ -3,12 +3,12 @@ import { Link, useNavigate } from "react-router-dom"
 import { KeyRound, Lock, Save } from "lucide-react"
 
 import updatePasswordBackground from "../../assets/landing-background.jpg"
-import { supabase } from "../../lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { updatePassword } from "@/apiService/AuthApi"
 
 function UpdatePassword() {
   const navigate = useNavigate()
@@ -42,9 +42,7 @@ function UpdatePassword() {
 
     setIsSaving(true)
 
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
+    const error = await updatePassword(newPassword)
 
     setIsSaving(false)
 
