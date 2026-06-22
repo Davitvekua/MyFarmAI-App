@@ -19,15 +19,15 @@ function Root() {
   const isPublicRoute = publicRoutes.includes(location.pathname)
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       {isPublicRoute ? <PublicHeader /> : <PrivateHeader />}
 
-      <main>
+      <main className="flex flex-1 flex-col [&>main]:flex-1">
         <Outlet />
       </main>
 
       <Footer />
-    </>
+    </div>
   )
 }
 

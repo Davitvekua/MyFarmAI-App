@@ -1,7 +1,5 @@
 // dashboard.tsx API service
 
-// fields von Supabase holen
-
 import { supabase } from "@/lib/supabaseClient"
 import type { PostgrestError, User } from "@supabase/supabase-js"
 import type {
@@ -12,7 +10,6 @@ import type {
   FieldsListField,
   FieldsMapField,
   FieldUpdate,
-  ProfileInsert,
 } from "@/types/appTypes"
 
 type LoadFieldsForDashboardResult = {
@@ -82,6 +79,20 @@ export async function deleteFieldForFieldDetails(
   const { error } = await supabase
     .from("fields")
     .delete()
+    .eq("id", fieldId)
+    .eq("user_id", userId)
+
+  return error
+}
+
+export async function updateFieldNoteForFieldDetails(
+  fieldId: string,
+  userId: string,
+  note: string
+): Promise<PostgrestError | null> {
+  const { error } = await supabase
+    .from("fields")
+    .update({ note: note.trim() || null })
     .eq("id", fieldId)
     .eq("user_id", userId)
 
@@ -191,16 +202,6 @@ export async function createFieldFromMap(
   newField: FieldInsert
 ): Promise<PostgrestError | null> {
   const { error } = await supabase.from("fields").insert(newField)
-
-  return error
-}
-
-export async function saveProfileForProfilePage(
-  profileData: ProfileInsert
-): Promise<PostgrestError | null> {
-  const { error } = await supabase
-    .from("profiles")
-    .upsert(profileData, { onConflict: "id" })
 
   return error
 }

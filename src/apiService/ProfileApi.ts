@@ -1,7 +1,7 @@
 // Dashboard API service
 
 import { supabase } from "@/lib/supabaseClient"
-import type { ProfileData } from "@/types/appTypes"
+import type { ProfileData, ProfileInsert } from "@/types/appTypes"
 import type { PostgrestError, User } from "@supabase/supabase-js"
 
 type ProfileNameData = {
@@ -48,4 +48,14 @@ export async function loadProfileForProfilePage(
     data,
     error,
   }
+}
+
+export async function saveProfileForProfilePage(
+  profileData: ProfileInsert
+): Promise<PostgrestError | null> {
+  const { error } = await supabase
+    .from("profiles")
+    .upsert(profileData, { onConflict: "id" })
+
+  return error
 }

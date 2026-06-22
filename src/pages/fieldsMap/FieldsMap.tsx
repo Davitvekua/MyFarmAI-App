@@ -6,6 +6,7 @@ import {
   MapContainer,
   Polygon,
   Popup,
+  ScaleControl,
   TileLayer,
   Tooltip,
   useMap,
@@ -16,6 +17,7 @@ import type { Polygon as GeoJsonPolygon } from "geojson"
 import fieldsMapBackground from "../../assets/landing-background.jpg"
 
 import { useAuth } from "../../context/AuthContext"
+import StatsCard from "@/components/StatsCard"
 import type { FieldsMapField } from "@/types/appTypes"
 import { loadFieldsForFieldsMap } from "@/apiService/FieldsApi"
 
@@ -160,10 +162,10 @@ function FieldsMap() {
 
   return (
     <main
-      className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
+      className="flex min-h-[calc(100vh-140px)] flex-col bg-cover bg-center bg-no-repeat text-gray-900"
       style={{ backgroundImage: `url(${fieldsMapBackground})` }}
     >
-      <div className="min-h-[calc(100vh-140px)] bg-[#f7f8ef]/70">
+      <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8 flex items-center gap-5">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-800">
@@ -181,46 +183,23 @@ function FieldsMap() {
           </section>
 
           <section className="mb-8 grid grid-cols-3 gap-8">
-            <div className="flex items-center gap-5 rounded-2xl bg-white/95 p-6 shadow-lg">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Sprout className="h-8 w-8" />
-              </div>
-
-              <div>
-                <p className="text-gray-700">Gespeicherte Flächen</p>
-                <p className="mt-1 text-3xl font-bold text-green-900">
-                  {isLoading ? "-" : fields.length}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-5 rounded-2xl bg-white/95 p-6 shadow-lg">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <MapPin className="h-8 w-8" />
-              </div>
-
-              <div>
-                <p className="text-gray-700">Auf Karte sichtbar</p>
-                <p className="mt-1 text-3xl font-bold text-green-900">
-                  {isLoading ? "-" : visibleFields.length}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-5 rounded-2xl bg-white/95 p-6 shadow-lg">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Sprout className="h-8 w-8" />
-              </div>
-
-              <div>
-                <p className="text-gray-700">Gesamtfläche</p>
-                <p className="mt-1 text-3xl font-bold text-green-900">
-                  {isLoading
-                    ? "-"
-                    : `${totalAreaHa.toLocaleString("de-DE")} ha`}
-                </p>
-              </div>
-            </div>
+            <StatsCard
+              label="Gespeicherte Flächen"
+              value={isLoading ? "-" : fields.length}
+              icon={Sprout}
+            />
+            <StatsCard
+              label="Auf Karte sichtbar"
+              value={isLoading ? "-" : visibleFields.length}
+              icon={MapPin}
+            />
+            <StatsCard
+              label="Gesamtfläche"
+              value={
+                isLoading ? "-" : `${totalAreaHa.toLocaleString("de-DE")} ha`
+              }
+              icon={Sprout}
+            />
           </section>
 
           <section className="rounded-2xl bg-white/95 p-8 shadow-lg">
@@ -248,6 +227,8 @@ function FieldsMap() {
                     url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                   />
                 )}
+
+                <ScaleControl imperial={false} position="bottomleft" />
 
                 <FieldsMapAutoFit positions={allPolygonPositions} />
 

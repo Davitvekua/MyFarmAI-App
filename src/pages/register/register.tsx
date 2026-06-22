@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import {
   Eye,
+  EyeOff,
   Globe,
   Lock,
   LogIn,
@@ -26,6 +27,7 @@ function Register() {
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [country, setCountry] = useState("")
   const [city, setCity] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
@@ -157,14 +159,30 @@ function Register() {
                   <Lock className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
                   <Input
                     id="password"
-                    type="password"
+                    type={isPasswordVisible ? "text" : "password"}
                     placeholder="Ihr Passwort"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     className="h-13 rounded-xl border-gray-300 px-12 text-base text-gray-700"
                     required
                   />
-                  <Eye className="absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible((visible) => !visible)}
+                    aria-label={
+                      isPasswordVisible
+                        ? "Passwort verbergen"
+                        : "Passwort anzeigen"
+                    }
+                    aria-pressed={isPasswordVisible}
+                    className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {isPasswordVisible ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
 

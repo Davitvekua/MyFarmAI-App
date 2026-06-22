@@ -15,10 +15,10 @@ import contactBackground from "../../assets/landing-background.jpg"
 function Kontakt() {
   return (
     <main
-      className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
+      className="flex min-h-[calc(100vh-140px)] flex-col bg-cover bg-center bg-no-repeat text-gray-900"
       style={{ backgroundImage: `url(${contactBackground})` }}
     >
-      <div className="min-h-[calc(100vh-140px)] bg-[#f7f8ef]/70">
+      <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-5">

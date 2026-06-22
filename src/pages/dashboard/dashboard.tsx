@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react"
-import { Edit3, Map, Plus, Sprout, Star, Zap } from "lucide-react"
+import {
+  Edit3,
+  Eye,
+  Map,
+  Plus,
+  Ruler,
+  Sprout,
+  Star,
+  UserRound,
+  Zap,
+} from "lucide-react"
 import { Link } from "react-router-dom"
 
 import dashboardBackground from "../../assets/landing-background.jpg"
 
 import { useAuth } from "../../context/AuthContext"
+import StatsCard from "@/components/StatsCard"
 import type { DashboardField } from "@/types/appTypes"
 import { loadProfileforDashboard } from "@/apiService/ProfileApi"
 import { loadFieldsforDashboard } from "@/apiService/FieldsApi"
@@ -77,15 +88,15 @@ function Dashboard() {
 
   return (
     <main
-      className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
+      className="flex min-h-[calc(100vh-140px)] flex-col bg-cover bg-center bg-no-repeat text-gray-900"
       style={{ backgroundImage: `url(${dashboardBackground})` }}
     >
-      <div className="min-h-[calc(100vh-140px)] bg-[#f7f8ef]/70">
+      <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8">
             <div className="flex items-center gap-5">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Sprout className="h-9 w-9" />
+                <UserRound className="h-9 w-9" />
               </div>
 
               <div>
@@ -101,46 +112,23 @@ function Dashboard() {
           </section>
 
           <section className="mb-8 grid grid-cols-3 gap-8">
-            <div className="flex items-center gap-6 rounded-2xl bg-white/95 p-8 shadow-lg">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Sprout className="h-11 w-11" />
-              </div>
-
-              <div>
-                <p className="text-lg text-gray-700">Anzahl Flächen</p>
-                <p className="mt-2 text-4xl font-bold text-green-900">
-                  {isLoading ? "-" : fields.length}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6 rounded-2xl bg-white/95 p-8 shadow-lg">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Sprout className="h-11 w-11" />
-              </div>
-
-              <div>
-                <p className="text-lg text-gray-700">Gesamtfläche</p>
-                <p className="mt-2 text-4xl font-bold text-green-900">
-                  {isLoading
-                    ? "-"
-                    : `${totalAreaHa.toLocaleString("de-DE")} ha`}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6 rounded-2xl bg-white/95 p-8 shadow-lg">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-800">
-                <Star className="h-11 w-11" />
-              </div>
-
-              <div>
-                <p className="text-lg text-gray-700">Größte Fläche</p>
-                <p className="mt-2 text-4xl font-bold text-green-900">
-                  {isLoading ? "-" : (largestField?.name ?? "-")}
-                </p>
-              </div>
-            </div>
+            <StatsCard
+              label="Anzahl Flächen"
+              value={isLoading ? "-" : fields.length}
+              icon={Sprout}
+            />
+            <StatsCard
+              label="Gesamtfläche"
+              value={
+                isLoading ? "-" : `${totalAreaHa.toLocaleString("de-DE")} ha`
+              }
+              icon={Ruler}
+            />
+            <StatsCard
+              label="Größte Fläche"
+              value={isLoading ? "-" : (largestField?.name ?? "-")}
+              icon={Star}
+            />
           </section>
 
           <section className="mb-8 rounded-2xl bg-white/95 p-8 shadow-lg">
@@ -216,9 +204,10 @@ function Dashboard() {
                           <Link
                             to={`/fields/${field.id}`}
                             title="Details"
-                            className="px-6"
+                            aria-label={`Details für ${field.name} anzeigen`}
+                            className="px-6 text-green-800 hover:text-green-950"
                           >
-                            ⋮
+                            <Eye className="inline-block h-5 w-5" />
                           </Link>
                         </td>
                       </tr>

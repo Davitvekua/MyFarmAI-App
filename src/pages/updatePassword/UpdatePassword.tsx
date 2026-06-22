@@ -1,6 +1,6 @@
 import { useState, type SyntheticEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { KeyRound, Lock, Save } from "lucide-react"
+import { Eye, EyeOff, KeyRound, Lock, Save } from "lucide-react"
 
 import updatePasswordBackground from "../../assets/landing-background.jpg"
 
@@ -15,6 +15,8 @@ function UpdatePassword() {
 
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
+  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
@@ -99,14 +101,34 @@ function UpdatePassword() {
 
                   <Input
                     id="newPassword"
-                    type="password"
+                    type={isNewPasswordVisible ? "text" : "password"}
                     placeholder="Neues Passwort"
                     value={newPassword}
                     onChange={(event) => setNewPassword(event.target.value)}
                     disabled={isSaving}
-                    className="h-16 rounded-xl border border-gray-300 pl-14 text-lg text-gray-700"
+                    className="h-16 rounded-xl border border-gray-300 px-14 text-lg text-gray-700"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsNewPasswordVisible((visible) => !visible)
+                    }
+                    disabled={isSaving}
+                    aria-label={
+                      isNewPasswordVisible
+                        ? "Passwort verbergen"
+                        : "Passwort anzeigen"
+                    }
+                    aria-pressed={isNewPasswordVisible}
+                    className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isNewPasswordVisible ? (
+                      <EyeOff className="h-6 w-6" />
+                    ) : (
+                      <Eye className="h-6 w-6" />
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -123,16 +145,36 @@ function UpdatePassword() {
 
                   <Input
                     id="confirmNewPassword"
-                    type="password"
+                    type={isConfirmPasswordVisible ? "text" : "password"}
                     placeholder="Neues Passwort wiederholen"
                     value={confirmNewPassword}
                     onChange={(event) =>
                       setConfirmNewPassword(event.target.value)
                     }
                     disabled={isSaving}
-                    className="h-16 rounded-xl border border-gray-300 pl-14 text-lg text-gray-700"
+                    className="h-16 rounded-xl border border-gray-300 px-14 text-lg text-gray-700"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsConfirmPasswordVisible((visible) => !visible)
+                    }
+                    disabled={isSaving}
+                    aria-label={
+                      isConfirmPasswordVisible
+                        ? "Passwort verbergen"
+                        : "Passwort anzeigen"
+                    }
+                    aria-pressed={isConfirmPasswordVisible}
+                    className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isConfirmPasswordVisible ? (
+                      <EyeOff className="h-6 w-6" />
+                    ) : (
+                      <Eye className="h-6 w-6" />
+                    )}
+                  </button>
                 </div>
               </div>
 

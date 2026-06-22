@@ -5,6 +5,7 @@ import {
   CircleMarker,
   MapContainer,
   Polygon,
+  ScaleControl,
   TileLayer,
   useMap,
 } from "react-leaflet"
@@ -380,10 +381,10 @@ function FieldEdit() {
 
   return (
     <main
-      className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
+      className="flex min-h-[calc(100vh-140px)] flex-col bg-cover bg-center bg-no-repeat text-gray-900"
       style={{ backgroundImage: `url(${fieldBackground})` }}
     >
-      <div className="min-h-[calc(100vh-140px)] bg-[#f7f8ef]/70">
+      <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           {isLoading && (
             <section className="rounded-2xl bg-white/95 p-8 text-lg text-gray-700 shadow-lg">
@@ -502,6 +503,8 @@ function FieldEdit() {
                         />
                       )}
 
+                      <ScaleControl imperial={false} position="bottomleft" />
+
                       <PolygonDrawControl
                         onPolygonCreated={handlePolygonCreated}
                         onDrawReady={handleDrawReady}
@@ -517,15 +520,11 @@ function FieldEdit() {
                           ? "Satellitenansicht anzeigen"
                           : "Kartenansicht anzeigen"
                       }
-                      className="absolute top-36 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md"
+                      className="absolute top-5 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md hover:bg-gray-50"
                     >
                       <Layers className="h-7 w-7" />
                     </button>
 
-                    <div className="absolute bottom-8 left-8 z-500 text-white">
-                      <div className="mb-1 text-sm font-semibold">100 m</div>
-                      <div className="h-0.5 w-16 bg-white" />
-                    </div>
                   </div>
 
                   <aside className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

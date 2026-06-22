@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Lock, LogIn, Mail } from "lucide-react"
+import { Eye, EyeOff, Lock, LogIn, Mail } from "lucide-react"
 
 import loginBackground from "../../assets/landing-background.jpg"
 
@@ -15,6 +15,7 @@ function Login() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -83,13 +84,30 @@ function Login() {
 
                   <Input
                     id="password"
-                    type="password"
+                    type={isPasswordVisible ? "text" : "password"}
                     placeholder="Ihr Passwort"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-16 rounded-xl border-gray-300 pl-14 text-lg text-gray-700"
+                    className="h-16 rounded-xl border-gray-300 px-14 text-lg text-gray-700"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordVisible((visible) => !visible)}
+                    aria-label={
+                      isPasswordVisible
+                        ? "Passwort verbergen"
+                        : "Passwort anzeigen"
+                    }
+                    aria-pressed={isPasswordVisible}
+                    className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {isPasswordVisible ? (
+                      <EyeOff className="h-6 w-6" />
+                    ) : (
+                      <Eye className="h-6 w-6" />
+                    )}
+                  </button>
                 </div>
 
                 <Link

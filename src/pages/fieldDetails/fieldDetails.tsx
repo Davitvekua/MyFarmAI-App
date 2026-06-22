@@ -13,11 +13,13 @@ import {
   Trash2,
   User,
   Waves,
+  Plus,
 } from "lucide-react"
 import {
   CircleMarker,
   MapContainer,
   Polygon,
+  ScaleControl,
   TileLayer,
   useMap,
 } from "react-leaflet"
@@ -32,6 +34,7 @@ import type { FieldDetailsField } from "@/types/appTypes"
 import {
   deleteFieldForFieldDetails,
   loadFieldForFieldDetails,
+  updateFieldNoteForFieldDetails,
 } from "@/apiService/FieldsApi"
 
 type PolygonPosition = [number, number]
@@ -100,6 +103,10 @@ function FieldDetails() {
   const [errorMessage, setErrorMessage] = useState("")
   const [mapView, setMapView] = useState<MapView>("street")
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isEditingNote, setIsEditingNote] = useState(false)
+  const [noteDraft, setNoteDraft] = useState("")
+  const [isSavingNote, setIsSavingNote] = useState(false)
+  const [noteErrorMessage, setNoteErrorMessage] = useState("")
 
   useEffect(() => {
     async function loadFieldDetails() {
@@ -204,12 +211,54 @@ function FieldDetails() {
     navigate("/fields")
   }
 
+  function handleStartNoteEdit() {
+    setNoteDraft(field?.note ?? "")
+    setNoteErrorMessage("")
+    setIsEditingNote(true)
+  }
+
+  function handleCancelNoteEdit() {
+    setNoteDraft(field?.note ?? "")
+    setNoteErrorMessage("")
+    setIsEditingNote(false)
+  }
+
+  async function handleSaveNote() {
+    if (!user || !field) {
+      setNoteErrorMessage("Die Notiz konnte nicht gespeichert werden.")
+      return
+    }
+
+    setIsSavingNote(true)
+    setNoteErrorMessage("")
+
+    const error = await updateFieldNoteForFieldDetails(
+      field.id,
+      user.id,
+      noteDraft
+    )
+
+    setIsSavingNote(false)
+
+    if (error) {
+      setNoteErrorMessage("Die Notiz konnte nicht gespeichert werden.")
+      return
+    }
+
+    setField((currentField) =>
+      currentField
+        ? { ...currentField, note: noteDraft.trim() || null }
+        : currentField
+    )
+    setIsEditingNote(false)
+  }
+
   return (
     <main
-      className="min-h-[calc(100vh-140px)] bg-cover bg-center bg-no-repeat text-gray-900"
+      className="flex min-h-[calc(100vh-140px)] flex-col bg-cover bg-center bg-no-repeat text-gray-900"
       style={{ backgroundImage: `url(${fieldBackground})` }}
     >
-      <div className="min-h-[calc(100vh-140px)] bg-[#f7f8ef]/70">
+      <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           {isLoading && (
             <section className="rounded-2xl bg-white/95 p-8 text-lg text-gray-700 shadow-lg">
@@ -338,6 +387,8 @@ function FieldDetails() {
                         />
                       )}
 
+                      <ScaleControl imperial={false} position="bottomleft" />
+
                       <FieldMapAutoFit
                         polygonPositions={polygonPositions}
                         centerPosition={centerPosition}
@@ -376,7 +427,7 @@ function FieldDetails() {
                           ? "Satellitenansicht anzeigen"
                           : "Kartenansicht anzeigen"
                       }
-                      className="absolute top-5 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md"
+                      className="absolute top-5 right-5 z-500 flex h-14 w-14 items-center justify-center rounded-xl bg-white text-gray-800 shadow-md hover:bg-gray-50"
                     >
                       <Layers className="h-7 w-7" />
                     </button>
@@ -385,17 +436,69 @@ function FieldDetails() {
               </section>
 
               <section className="mb-6 rounded-2xl bg-white/95 p-8 shadow-lg">
-                <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-800">
-                    <ClipboardList className="h-7 w-7" />
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-800">
+                      <ClipboardList className="h-7 w-7" />
+                    </div>
+
+                    <h2 className="text-3xl font-bold text-green-900">Notiz</h2>
                   </div>
 
-                  <h2 className="text-3xl font-bold text-green-900">Notizen</h2>
+                  {!isEditingNote && (
+                    <button
+                      type="button"
+                      onClick={handleStartNoteEdit}
+                      className="flex items-center gap-2 rounded-lg border border-green-700 px-5 py-2.5 font-semibold text-green-800 hover:bg-green-50"
+                    >
+                      <Pencil className="h-5 w-5" />
+                      Bearbeiten
+                    </button>
+                  )}
                 </div>
 
-                <p className="text-lg text-gray-700">
-                  {field.note || "Keine Notiz vorhanden."}
-                </p>
+                {isEditingNote ? (
+                  <div className="space-y-4">
+                    <textarea
+                      value={noteDraft}
+                      onChange={(event) => setNoteDraft(event.target.value)}
+                      disabled={isSavingNote}
+                      rows={5}
+                      aria-label="Notiz bearbeiten"
+                      className="w-full resize-y rounded-xl border border-gray-300 bg-white px-4 py-3 text-lg text-gray-700 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100 disabled:bg-gray-50 disabled:text-gray-500"
+                    />
+
+                    {noteErrorMessage && (
+                      <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                        {noteErrorMessage}
+                      </p>
+                    )}
+
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={handleSaveNote}
+                        disabled={isSavingNote}
+                        className="flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 disabled:opacity-60"
+                      >
+                        <Pencil className="h-5 w-5" />
+                        {isSavingNote ? "Wird gespeichert..." : "Speichern"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCancelNoteEdit}
+                        disabled={isSavingNote}
+                        className="rounded-lg border border-gray-400 bg-white px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="rounded-xl border border-gray-200 px-4 py-3 text-lg text-gray-700">
+                    {field.note || "Keine Notiz vorhanden."}
+                  </p>
+                )}
               </section>
 
               <section className="rounded-2xl bg-white/95 p-8 shadow-lg">
@@ -422,8 +525,8 @@ function FieldDetails() {
                     to="/map"
                     className="flex items-center justify-center gap-3 rounded-lg border border-green-700 bg-white px-6 py-4 text-lg font-semibold text-green-800 hover:bg-green-50"
                   >
-                    <Map className="h-5 w-5" />
-                    Auf Karte anzeigen
+                    <Plus className="h-5 w-5" />
+                    Neue Fläche anlegen
                   </Link>
 
                   <button

@@ -42,7 +42,7 @@ function PrivateHeader() {
 
         <NavLink to="/map" className={navLinkClass}>
           <MapPin className="h-5 w-5" />
-          Karte
+          Fläche anlegen
         </NavLink>
 
         <NavLink to="/fields-map" className={navLinkClass}>
