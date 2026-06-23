@@ -335,7 +335,6 @@ function Mapp() {
                 >
                   <Layers className="h-7 w-7" />
                 </button>
-
               </div>
 
               <aside className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

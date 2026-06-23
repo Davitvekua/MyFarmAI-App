@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
+import { Card } from "@/components/ui/card"
+
 type StatsCardProps = {
   label: string
   value: ReactNode
@@ -17,11 +19,11 @@ function StatsCard({
   const isFeature = variant === "feature"
 
   return (
-    <div
+    <Card
       className={
         isFeature
-          ? "flex items-center gap-6 rounded-xl bg-white p-6 shadow-md"
-          : "flex items-center gap-5 rounded-2xl bg-white/95 p-6 shadow-lg"
+          ? "flex flex-row items-center gap-6 rounded-xl bg-white p-6 shadow-lg"
+          : "flex flex-row items-center gap-5 rounded-2xl bg-white/95 p-6 shadow-lg"
       }
     >
       <div
@@ -38,16 +40,16 @@ function StatsCard({
         {isFeature ? (
           <>
             <h3 className="text-xl font-bold text-green-900">{label}</h3>
-            <p className="mt-2 text-gray-700">{value}</p>
+            <p className="mt-2 text-base text-gray-700">{value}</p>
           </>
         ) : (
           <>
-            <p className="text-gray-700">{label}</p>
+            <p className="text-lg text-gray-700">{label}</p>
             <p className="mt-1 text-3xl font-bold text-green-900">{value}</p>
           </>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

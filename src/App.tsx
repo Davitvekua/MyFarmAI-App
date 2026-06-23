@@ -18,6 +18,7 @@ import Impressum from "./pages/impressum/impressum"
 import FieldsMap from "./pages/fieldsMap/FieldsMap"
 import UpdatePassword from "./pages/updatePassword/UpdatePassword"
 import ResetPassword from "./pages/resetPassword/ResetPassword"
+import Chat from "./pages/chat/Chat"
 
 function App() {
   const router = createBrowserRouter(
@@ -88,6 +89,14 @@ function App() {
             element: (
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "chat",
+            element: (
+              <ProtectedRoute>
+                <Chat />
               </ProtectedRoute>
             ),
           },
