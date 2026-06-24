@@ -60,7 +60,7 @@ export function useAuth() {
   const context = useContext(AuthContext)
 
   if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider")
+    throw new Error("useAuth muss innerhalb von ChatProvider verwendet werden")
   }
 
   return context
