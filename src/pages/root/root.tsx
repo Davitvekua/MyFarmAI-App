@@ -4,6 +4,7 @@ import PublicHeader from "./rootComponents/publicHeader"
 import PrivateHeader from "./rootComponents/privatHeader"
 import Footer from "./rootComponents/footer"
 import ChatPopup from "@/components/chat/ChatPopup"
+import ScrollToTop from "@/components/ScrollToTop"
 
 function Root() {
   const location = useLocation()
@@ -14,7 +15,7 @@ function Root() {
     "/register",
     "/reset-password",
     "/update-password",
-    "/kontakt",
+    "/datenschutz",
     "/impressum",
   ]
 
@@ -32,6 +33,7 @@ function Root() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <ScrollToTop />
       {isPublicRoute ? <PublicHeader /> : <PrivateHeader />}
 
       <main className="flex flex-1 flex-col [&>main]:flex-1">

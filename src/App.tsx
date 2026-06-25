@@ -13,7 +13,7 @@ import Fields from "./pages/fields/fields"
 import FieldDetails from "./pages/fieldDetails/fieldDetails"
 import FieldEdit from "./pages/fieldEdit/fieldEdit"
 import Mapp from "./pages/map/map"
-import Kontakt from "./pages/kontakt/kontakt"
+import Datenschutz from "./pages/datenschutzerklaerung/datenschutz"
 import Impressum from "./pages/impressum/impressum"
 import FieldsMap from "./pages/fieldsMap/FieldsMap"
 import UpdatePassword from "./pages/updatePassword/UpdatePassword"
@@ -101,7 +101,7 @@ function App() {
             ),
           },
 
-          { path: "kontakt", element: <Kontakt /> },
+          { path: "datenschutz", element: <Datenschutz /> },
           { path: "impressum", element: <Impressum /> },
         ],
       },

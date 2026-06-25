@@ -148,7 +148,7 @@ function Fields() {
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-5">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-800">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-800 text-green-50">
                 <Sprout className="h-10 w-10" />
               </div>
 

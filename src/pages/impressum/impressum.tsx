@@ -62,9 +62,9 @@ function Impressum() {
 
                 <p className="text-lg text-gray-800">Davit Vekua</p>
                 <p className="mt-1 text-gray-600">
-                  Musterstraße 1
+                  Klosterstraße **
                   <br />
-                  12345 Musterstadt
+                  91737 Ornbau
                   <br />
                   Deutschland
                 </p>
@@ -79,13 +79,13 @@ function Impressum() {
                 <p className="text-gray-600">
                   E-Mail:{" "}
                   <span className="font-semibold text-gray-800">
-                    davitvekuavekua@gmail.com
+                    davitvekua23@gmail.com
                   </span>
                 </p>
                 <p className="text-gray-600">
                   Telefon:{" "}
                   <span className="font-semibold text-gray-800">
-                    Nicht angegeben
+                    +49 1520 9977405
                   </span>
                 </p>
               </div>
@@ -98,7 +98,10 @@ function Impressum() {
 
                 <p className="text-gray-600">
                   MyFarmAI ist eine webbasierte Anwendung zur Verwaltung
-                  landwirtschaftlicher Flächen. Diese Seite ist Teil eines
+                  landwirtschaftlicher Flächen mit integriertem KI-Assistenten.
+                  Die Anwendung unterstützt Nutzer bei der digitalen
+                  Flächenverwaltung und bietet KI-gestützte Hilfestellung zu
+                  landwirtschaftlichen Fragen. Diese Seite ist Teil eines
                   nicht-kommerziellen Lern- und Entwicklungsprojekts.
                 </p>
               </div>

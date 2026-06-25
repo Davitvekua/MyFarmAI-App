@@ -95,7 +95,7 @@ function Dashboard() {
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8">
             <div className="flex items-center gap-5">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-800">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-800 text-green-50">
                 <UserRound className="h-9 w-9" />
               </div>
 

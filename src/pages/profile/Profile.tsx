@@ -189,15 +189,15 @@ function Profile() {
         <Card className="w-full max-w-xl rounded-3xl bg-white/95 px-8 py-10 shadow-xl">
           <CardContent className="p-0">
             <div className="mb-10 flex items-center gap-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-800">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-800 text-green-50">
                 <User className="h-8 w-8" />
               </div>
 
               <div>
-                <h1 className="text-4xl font-bold text-green-950">
+                <h1 className="text-4xl font-bold text-green-800">
                   Benutzerprofil
                 </h1>
-                <p className="mt-2 text-gray-700">
+                <p className="mt-2 text-green-900">
                   Verwalte hier deine persönlichen Daten.
                 </p>
               </div>
@@ -343,11 +343,11 @@ function Profile() {
         <Card className="w-full max-w-xl rounded-3xl bg-white/95 px-8 py-10 shadow-xl">
           <CardContent className="p-0">
             <div className="mb-7 flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-800">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-800 text-green-50">
                 <KeyRound className="h-7 w-7" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-green-950">Konto</h2>
+                <h2 className="text-2xl font-bold text-green-800">Konto</h2>
                 <p className="text-gray-700">Passwort und Sitzung verwalten.</p>
               </div>
             </div>

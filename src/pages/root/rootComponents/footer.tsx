@@ -13,8 +13,8 @@ function Footer() {
           MyFarmAI
         </Link>
         <span>|</span>
-        <Link to="/kontakt" className="hover:underline">
-          Kontakt
+        <Link to="/datenschutz" className="hover:underline">
+          Datenschutzerklärung
         </Link>
         <span>|</span>
         <Link to="/impressum" className="hover:underline">

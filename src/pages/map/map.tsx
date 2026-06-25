@@ -240,7 +240,7 @@ function Mapp() {
       <div className="flex-1 bg-[#f7f8ef]/70">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <section className="mb-8 flex items-center gap-5">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-800">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-800 text-green-50">
               <MapPin className="h-10 w-10" />
             </div>
 

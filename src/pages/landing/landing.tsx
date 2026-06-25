@@ -1,9 +1,11 @@
 import {
+  Bot,
   Calculator,
   CheckCircle,
   Info,
   LogIn,
   MapPinned,
+  MessageCircle,
   Sprout,
   UserPlus,
   Users,
@@ -26,12 +28,12 @@ function Landing() {
       >
         <div className="mx-auto grid min-h-92.5 max-w-6xl grid-cols-2 items-center px-6 py-12">
           <div>
-            <h1 className="max-w-xl text-5xl leading-tight font-bold text-green-950">
+            <h1 className="max-w-xl text-5xl leading-tight font-bold text-green-900">
               Verwalte deine landwirtschaftlichen Flächen digital und
-              übersichtlich
+              KI-gestützt
             </h1>
 
-            <p className="mt-6 max-w-lg text-xl leading-relaxed text-white">
+            <p className="mt-6 max-w-lg text-xl leading-relaxed text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.65)]">
               MyFarmAI hilft dir, Flächen auf einer Karte zu erfassen, zu
               speichern und zu verwalten.
             </p>
@@ -71,23 +73,29 @@ function Landing() {
             Was bietet MyFarmAI?
           </h2>
 
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 gap-8">
             <StatsCard
-              label="Kartenansicht"
-              value="Flächen auf Karte markieren"
+              label="Interaktive Kartenansicht"
+              value="Flächen direkt auf der Karte markieren, speichern und später wiederfinden."
               icon={MapPinned}
               variant="feature"
             />
             <StatsCard
               label="Flächenverwaltung"
-              value="Felder anlegen, bearbeiten und löschen"
+              value="Eigene Felder anlegen, bearbeiten und mit Bodenart, Kulturart und Notizen verwalten."
               icon={Sprout}
               variant="feature"
             />
             <StatsCard
-              label="Berechnung"
-              value="Größe in m² oder ha anzeigen"
+              label="Automatische Berechnung"
+              value="Die Größe deiner eingezeichneten Flächen wird übersichtlich in m² und Hektar angezeigt."
               icon={Calculator}
+              variant="feature"
+            />
+            <StatsCard
+              label="KI-Assistent"
+              value="Stelle Fragen zu deinen Flächen und erhalte Antworten mit Bezug zu Profil, Bodenart und Kulturart."
+              icon={Bot}
               variant="feature"
             />
           </div>
@@ -97,7 +105,8 @@ function Landing() {
             <p>
               <span className="font-semibold">Hinweis:</span>{" "}
               <span className="italic">
-                Diese Funktionen stehen nach Anmeldung zur Verfügung.
+                Karten-, Flächen- und KI-Funktionen stehen nach Anmeldung zur
+                Verfügung.
               </span>
             </p>
           </div>
@@ -128,13 +137,41 @@ function Landing() {
               </li>
               <li className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-green-700" />
-                Speicherung von Kulturart, Bodenart und Notizen
+                Speicherung von Kulturart, Bodenart, Größe und Notizen
               </li>
               <li className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-green-700" />
-                Einfache Bearbeitung und Verwaltung eigener Flächen
+                KI-gestützte Antworten auf landwirtschaftliche Fragen
+              </li>
+              <li className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-700" />
+                Kontextbezogene Hilfe anhand deiner gespeicherten Flächen
               </li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#f7f8ef] py-8">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="flex items-center rounded-2xl bg-white px-12 py-8 shadow-sm">
+            <div className="flex w-full items-center gap-8">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-800">
+                <MessageCircle className="h-12 w-12" />
+              </div>
+
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold text-green-900">
+                  KI-Assistent für deine Flächen
+                </h2>
+                <p className="mt-3 leading-relaxed text-gray-700">
+                  Der Chatbot berücksichtigt dein Profil und deine gespeicherten
+                  Flächen, zum Beispiel Vorname, Land, Stadt, Bodenart und
+                  Kulturart. Dadurch kann er praxisnäher antworten und Fragen
+                  besser auf deine landwirtschaftliche Situation beziehen.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -155,8 +192,8 @@ function Landing() {
                   Starte mit MyFarmAI
                 </h2>
                 <p className="mt-3 max-w-md text-gray-700">
-                  Erstelle ein Konto, um eigene Flächen zu speichern und die
-                  Kartenfunktionen zu nutzen.
+                  Erstelle ein Konto, um eigene Flächen zu speichern, die
+                  Kartenfunktionen zu nutzen und den KI-Assistenten zu befragen.
                 </p>
               </div>
             </div>

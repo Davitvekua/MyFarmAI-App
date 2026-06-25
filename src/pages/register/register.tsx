@@ -76,7 +76,7 @@ function Register() {
       <div className="mx-auto flex max-w-5xl justify-center">
         <Card className="w-full max-w-xl rounded-3xl bg-white/95 px-8 py-8 shadow-xl">
           <CardContent className="p-0">
-            <h1 className="mb-7 text-5xl font-bold text-green-950">
+            <h1 className="mb-7 text-5xl font-bold text-green-800">
               Registrierung
             </h1>
 
