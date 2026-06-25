@@ -8,8 +8,14 @@ import { useChat } from "@/context/ChatContext"
 function ChatPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState("")
-  const { messages, isLoading, errorMessage, sendMessage, clearChat } =
-    useChat()
+  const {
+    messages,
+    firstName,
+    isLoading,
+    errorMessage,
+    sendMessage,
+    clearChat,
+  } = useChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const canClearChat =
     !isLoading && (messages.length > 0 || Boolean(errorMessage))
@@ -80,7 +86,8 @@ function ChatPopup() {
                 <Bot className="h-4 w-4" />
               </div>
               <p className="rounded-2xl rounded-tl-sm bg-white px-3 py-2.5 text-sm leading-relaxed text-gray-700 shadow-sm">
-                Hallo! Wie kann ich dir heute helfen?
+                Hallo{firstName ? ` ${firstName}` : ""}! Wie kann ich dir heute
+                helfen?
               </p>
             </div>
 

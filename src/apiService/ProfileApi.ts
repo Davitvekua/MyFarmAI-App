@@ -59,3 +59,22 @@ export async function saveProfileForProfilePage(
 
   return error
 }
+
+// API Service for AI Chat
+
+export async function loadProfileFirstNameForChat(
+  userId: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("first_name")
+    .eq("id", userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error("Vorname konnte nicht geladen werden:", error.message)
+    return null
+  }
+
+  return data?.first_name?.trim() || null
+}

@@ -8,8 +8,14 @@ import { useChat } from "@/context/ChatContext"
 
 function ChatBox() {
   const [message, setMessage] = useState("")
-  const { messages, isLoading, errorMessage, sendMessage, clearChat } =
-    useChat()
+  const {
+    messages,
+    firstName,
+    isLoading,
+    errorMessage,
+    sendMessage,
+    clearChat,
+  } = useChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const canClearChat =
     !isLoading && (messages.length > 0 || Boolean(errorMessage))
@@ -63,8 +69,9 @@ function ChatBox() {
             <Bot className="h-5 w-5" />
           </div>
           <div className="max-w-xl rounded-2xl rounded-tl-sm bg-green-50 px-4 py-3 text-base leading-relaxed text-gray-700">
-            Hallo! Ich bin dein MyFarmAI Assistent. Wie kann ich dich bei deinen
-            landwirtschaftlichen Flächen unterstützen?
+            Hallo{firstName ? ` ${firstName}` : ""}! Ich bin dein MyFarmAI
+            Assistent. Wie kann ich dich bei deinen landwirtschaftlichen Flächen
+            unterstützen?
           </div>
         </div>
 
