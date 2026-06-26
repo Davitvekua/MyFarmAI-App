@@ -4,20 +4,40 @@ import {
   CheckCircle,
   Info,
   LogIn,
+  LogOut,
   MapPinned,
   MessageCircle,
   Sprout,
   UserPlus,
   Users,
 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import heroPreview from "../../assets/landing-hero-preview.png"
 import landingBackground from "../../assets/landing-background.jpg"
 
 import StatsCard from "@/components/StatsCard"
+import { useAuth } from "@/context/AuthContext"
+import { Button } from "@/components/ui/button"
+import { logoutUser } from "@/apiService/AuthApi"
+import { useState } from "react"
 
 function Landing() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState("")
+
+  async function handleLogout() {
+    const error = await logoutUser()
+
+    if (error) {
+      setErrorMessage("Logout fehlgeschlagen.")
+      return
+    }
+
+    navigate("/login")
+  }
+
   return (
     <main className="overflow-hidden bg-white text-gray-900">
       <section
@@ -175,7 +195,11 @@ function Landing() {
           </div>
         </div>
       </section>
-
+      {errorMessage && (
+        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+          {errorMessage}
+        </p>
+      )}
       <section
         className="bg-cover bg-center py-8"
         style={{ backgroundImage: `url(${landingBackground})` }}
@@ -207,13 +231,25 @@ function Landing() {
                 Kostenlos registrieren
               </Link>
 
-              <Link
-                to="/login"
-                className="flex items-center gap-3 rounded-lg border border-green-800 bg-white px-8 py-4 font-semibold text-green-800 hover:bg-green-50"
-              >
-                <LogIn className="h-5 w-5" />
-                Zum Login
-              </Link>
+              {user ? (
+                <Button
+                  type="button"
+                  onClick={handleLogout}
+                  variant="destructive"
+                  className="h-14 rounded-xl border-red-500 px-4 text-lg font-semibold text-red-600 hover:bg-red-50 hover:text-red-700"
+                >
+                  <LogOut className="mr-3 size-6" />
+                  Logout
+                </Button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-3 rounded-lg border border-green-800 bg-white px-8 py-4 font-semibold text-green-800 hover:bg-green-50"
+                >
+                  <LogIn className="h-5 w-5" />
+                  Zum Login
+                </Link>
+              )}
             </div>
           </div>
         </div>

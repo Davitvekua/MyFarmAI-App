@@ -1,9 +1,23 @@
-import { Sprout } from "lucide-react"
-import { Link } from "react-router-dom"
+import {
+  CircleCheck,
+  Grid2X2,
+  HomeIcon,
+  LogIn,
+  Sprout,
+  UserPlus,
+} from "lucide-react"
+import { NavLink } from "react-router-dom"
 import { useAuth } from "../../../context/AuthContext"
 
 function PublicHeader() {
   const { user } = useAuth()
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-2 rounded-md px-4 py-2 font-medium transition ${
+      isActive
+        ? "bg-green-800 text-white"
+        : "font-semibold text-gray-800 hover:bg-green-50 hover:text-green-900"
+    }`
 
   return (
     <header className="flex items-center justify-between bg-white px-10 py-5 shadow-sm">
@@ -12,40 +26,33 @@ function PublicHeader() {
         <span>MyFarmAI</span>
       </div>
 
-      <nav className="flex items-center gap-8">
-        <Link
-          to="/"
-          className="font-semibold text-gray-800 hover:text-green-800"
-        >
+      <nav className="flex items-center gap-7">
+        <NavLink to="/" className={navLinkClass}>
+          <HomeIcon className="h-5 w-5" />
           Home
-        </Link>
+        </NavLink>
         {user ? (
-          <Link
-            to="/dashboard"
-            className="font-semibold text-gray-800 hover:text-green-800"
-          >
+          <NavLink to="/dashboard" className={navLinkClass}>
+            <Grid2X2 className="h-5 w-5" />
             Dashboard
-          </Link>
+          </NavLink>
         ) : (
-          <Link
-            to="/login"
-            className="font-semibold text-gray-800 hover:text-green-800"
-          >
+          <NavLink to="/login" className={navLinkClass}>
+            <LogIn className="h-5 w-5" />
             Login
-          </Link>
+          </NavLink>
         )}
 
         {user ? (
-          <p className="rounded-lg bg-green-50 px-5 py-3 font-semibold text-green-800">
-            Bereits angemeldet
+          <p className="flex items-center gap-2 rounded-lg bg-green-50 px-5 py-3 font-semibold text-green-800">
+            <CircleCheck className="h-5 w-5" />
+            Sie sind bereits angemeldet
           </p>
         ) : (
-          <Link
-            to="/register"
-            className="rounded-lg bg-green-700 px-7 py-3 font-semibold text-white shadow-md hover:bg-green-800"
-          >
+          <NavLink to="/register" className={navLinkClass}>
+            <UserPlus className="h-5 w-5" />
             Registrieren
-          </Link>
+          </NavLink>
         )}
       </nav>
     </header>

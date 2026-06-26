@@ -23,7 +23,7 @@ function PrivateHeader() {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 rounded-md px-4 py-2 font-medium transition ${
       isActive
-        ? "bg-green-100 text-green-900"
+        ? "bg-green-800 text-white"
         : "text-gray-700 hover:bg-green-50 hover:text-green-900"
     }`
 
